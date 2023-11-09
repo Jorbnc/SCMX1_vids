@@ -32,8 +32,7 @@ class eoq_01(MovingCameraScene):
         self.wait(1)
         self.play(Create(grid), Write(x_label), Write(y_label), run_time=1.75)
 
-        #q_dot = Circle(radius=0.5, color=RED, fill_opacity=1).move_to([-0.3,0.75,0])
-        q_dot = Dot(point=grid.c2p(0, 400, 0), color=RED)
+        q_dot = Dot(point=grid.c2p(0, 400, 0), radius=0.05, color=RED)
         self.play(Transform(formula_and_surr, q_dot), run_time=1, rate_func=smooth)
 
         # EOQ: D = 2400, ct=100, ce=3 => Q = 400

@@ -5,7 +5,7 @@ class eoq_01(MovingCameraScene):
     def construct(self):
 
         formula = MathTex(r"Q^{*} = \sqrt{\frac{2Dc_{t}}{c_{e}}}", color=RED).move_to([0, 0, 0])
-        formula_surr = SurroundingRectangle(formula, color=RED, buff=0.5, corner_radius=0.5)
+        formula_surr = SurroundingRectangle(formula, color=RED, buff=0.4, corner_radius=0.25)
         formula_and_surr = VGroup(formula, formula_surr)
         self.play(Write(formula), Create(formula_surr), run_time=1.5)
     

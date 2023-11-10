@@ -1,5 +1,43 @@
 from main_theme import *
 
+# EOQ Formula
+formula = MathTex(r"Q^{*} = \sqrt{\frac{2Dc_{t}}{c_{e}}}", color=RED).move_to([0, 0, 0])
+formula_surr = SurroundingRectangle(formula, color=RED, buff=0.4, corner_radius=0.25)
+formula_and_surr = VGroup(formula, formula_surr)
+
+#Axis
+grid = Axes(
+    x_range=[0, 365, 30], y_range=[0, 500, 100],
+    x_length=11, y_length=3.5,
+    axis_config={
+        "color": BLACK,
+        #"include_numbers": True,
+        #"decimal_number_config": {"color":BLACK, "num_decimal_places": 0},
+        #"numbers_to_include": np.arange(0, 52, 5), # If only specific numbers are to be shown
+        "font_size": 24,
+    },
+    tips=False,
+)
+
+# Labels for the x-axis and y-axis.
+y_label = grid.get_y_axis_label(Tex("$y:$ Inventory").scale(0.65).rotate(90 * DEGREES),
+                                edge=LEFT, direction=LEFT, buff=0.3)
+x_label = grid.get_x_axis_label(Tex("$x:$ Time").scale(0.65),
+                                edge=DOWN, direction=DOWN, buff=0.3)
+
+# EOQ: D = 2400, ct=100, ce=3 => Q = 400
+replenishments = 6
+replenishment_period = (400/2400)*365
+x_values = [i * replenishment_period for n in range(replenishments) for i in (n, n)] + [365]
+
+sawtooth = grid.plot_line_graph(
+    x_values = x_values,
+    y_values = [400 if i % 2 else 0 for i in range(len(x_values))],
+    line_color = RED,
+    stroke_width = 3,
+    add_vertex_dots=False,
+)
+
 class eoq_01_01(MovingCameraScene):
 
     def construct(self):
@@ -17,51 +55,15 @@ class eoq_01_01(MovingCameraScene):
         self.wait(1)
         self.play(Write(op_scm_text), run_time=1.5)
 
-        formula = MathTex(r"Q^{*} = \sqrt{\frac{2Dc_{t}}{c_{e}}}", color=RED).move_to([0, 0, 0])
-        formula_surr = SurroundingRectangle(formula, color=RED, buff=0.4, corner_radius=0.25)
-        formula_and_surr = VGroup(formula, formula_surr)
         self.play(FadeOut(op_scm_text), run_time=0.5)
         self.play(ReplacementTransform(eoq_text, formula), run_time=1)
         self.play(Create(formula_surr), run_time=1)
-    
-        #Axis
-        grid = Axes(
-            x_range=[0, 365, 30], y_range=[0, 500, 100],
-            x_length=11, y_length=3.5,
-            axis_config={
-                "color": BLACK,
-                #"include_numbers": True,
-                #"decimal_number_config": {"color":BLACK, "num_decimal_places": 0},
-                #"numbers_to_include": np.arange(0, 52, 5), # If only specific numbers are to be shown
-                "font_size": 24,
-            },
-            tips=False,
-        )
-
-        # Labels for the x-axis and y-axis.
-        y_label = grid.get_y_axis_label(Tex("$y:$ Inventory").scale(0.65).rotate(90 * DEGREES),
-                                        edge=LEFT, direction=LEFT, buff=0.3)
-        x_label = grid.get_x_axis_label(Tex("$x:$ Time").scale(0.65),
-                                        edge=DOWN, direction=DOWN, buff=0.3)
 
         self.wait(1)
         self.play(Create(grid), Write(x_label), Write(y_label), run_time=1.75)
 
         q_dot = Dot(point=grid.c2p(0, 400, 0), radius=0.05, color=RED)
         self.play(ReplacementTransform(formula_and_surr, q_dot), run_time=1, rate_func=smooth)
-
-        # EOQ: D = 2400, ct=100, ce=3 => Q = 400
-        replenishments = 6
-        replenishment_period = (400/2400)*365
-        x_values = [i * replenishment_period for n in range(replenishments) for i in (n, n)] + [365]
-
-        sawtooth = grid.plot_line_graph(
-            x_values = x_values,
-            y_values = [400 if i % 2 else 0 for i in range(len(x_values))],
-            line_color = RED,
-            stroke_width = 3,
-            add_vertex_dots=False,
-        )
 
         self.play(Create(sawtooth, run_time=1.25, rate_func=linear))
 
@@ -156,11 +158,72 @@ class eoq_01_01(MovingCameraScene):
         self.play(setup_cost.animate.set_color(DARK_BLUE), Write(setup_text), run_time=0.5)
         self.play(setup_cost.animate.set_color(RED), setup_text.animate.set_color(RED), run_time=0.5)
 
-        self.wait(2)
+
+        self.wait(1)
+
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects], run_time=1 # FadeOut all mobjects in this scene
+        )
+
+        self.wait(1)
 
 class eoq_01_02(MovingCameraScene):
 
     def construct(self):
 
-        eoq_full_text = Tex(r"Economic Order Quantity")
-        eoq_text = MathTex(r"EOQ")
+        formula_and_surr.move_to([0, 2.25, 0])
+        eoq_model = VGroup(grid, sawtooth, x_label, y_label).move_to([0, -0.75, 0])
+        self.play(FadeIn(formula_and_surr), FadeIn(eoq_model), run_time=1.5)
+
+        self.wait(1) # 12
+        
+        x_axis_lenght = 17
+        y_axis_length = 5
+
+        # EPQ
+        ax1 = Axes(
+            x_range=[0, 365, 73], y_range=[0, 400, 100],
+            x_length=x_axis_lenght, y_length=3,
+            axis_config={"color": BLACK},
+            tips=False,
+        )
+        p = 25
+        epq_values = [0, 0+p, 73, 73+p, 146, 146+p, 219, 219+p, 292, 292+p, 365]
+        epq = ax1.plot_line_graph(
+            x_values = epq_values,
+            y_values = [350 if i % 2 else 0 for i in range(len(epq_values))],
+            line_color = RED,
+            stroke_width = 3,
+            add_vertex_dots=False,
+        )
+        
+        epq_vlines = VGroup()
+        for x in epq_values[1::2]: # Starting at index 1, get values every 2
+            epq_vlines += ax1.get_vertical_line(ax1.c2p(x, 350), line_config={"dashed_ratio": 0.9}, color=RED)
+
+        epq_model = VGroup(ax1, epq, epq_vlines)
+
+        # Continuous Review
+        ax2 = Axes(
+            x_range=[0, 365, 73], y_range=[0, 500, 100],
+            x_length=x_axis_lenght, y_length=y_axis_length,
+            axis_config={"color": BLACK,"font_size": 24,},
+            tips=False,
+        )
+
+        # Periodic Review
+        ax3 = Axes(
+            x_range=[0, 365, 73], y_range=[0, 500, 100],
+            x_length=x_axis_lenght, y_length=y_axis_length,
+            axis_config={"color": BLACK,"font_size": 24,},
+            tips=False,
+        )
+
+        models = VGroup(epq_model, ax2, ax3)
+
+        self.add(models.arrange(DOWN, buff=1, center=False, aligned_edge=LEFT).move_to([15.75, 0, 0]))
+
+        self.play(self.camera.frame.animate.scale(2.25).move_to([9.5, 0, 0]), run_time=1)
+
+        self.wait(2)
+

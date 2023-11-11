@@ -1,4 +1,6 @@
 from main_theme import *
+import random
+from itertools import *
 
 # EOQ Formula
 formula = MathTex(r"Q^{*} = \sqrt{\frac{2Dc_{t}}{c_{e}}}", color=RED).move_to([0, 0, 0])
@@ -175,7 +177,7 @@ class eoq_01_02(MovingCameraScene):
         eoq_model = VGroup(grid, sawtooth, x_label, y_label).move_to([0, -0.75, 0])
         self.play(FadeIn(formula_and_surr), FadeIn(eoq_model), run_time=1.5)
 
-        self.wait(1) # 12
+        self.wait(9) # 12
         
         x_axis_lenght = 17
         y_axis_length = 5
@@ -205,25 +207,102 @@ class eoq_01_02(MovingCameraScene):
 
         # Continuous Review
         ax2 = Axes(
-            x_range=[0, 365, 73], y_range=[0, 500, 100],
+            x_range=[0, 365, 73], y_range=[0, 600, 100],
             x_length=x_axis_lenght, y_length=y_axis_length,
             axis_config={"color": BLACK,"font_size": 24,},
             tips=False,
         )
+        
+        continuous_y_values = [500]; continuous_x_values = [0]
+        continuous_level = continuous_y_values[0]; cont_x = continuous_x_values[0]
+        continuous_Q = 250
+        s = 200
+        for i in range(150):
+            continuous_level -= random.randint(1,20)
+            cont_x += 2.34
+            if continuous_level <= s:
+                continuous_level = 200 + continuous_Q
+                continuous_y_values.extend([s, continuous_level])
+                continuous_x_values.extend([cont_x, cont_x])
+            else:
+                continuous_y_values.append(continuous_level)
+                continuous_x_values.append(cont_x)
+                
+        continuous_plot = ax2.plot_line_graph(
+            x_values = continuous_x_values,
+            y_values = continuous_y_values,
+            line_color = RED,
+            stroke_width = 3,
+            add_vertex_dots=False,
+        )
 
+        continuous_indices = [i for i in range(len(continuous_y_values)) if continuous_y_values[i] == 200]
+        continuous_ip = VGroup()
+        for i in continuous_indices:
+            continuous_ip += ax2.plot_line_graph(
+                x_values = np.concatenate([[continuous_x_values[i-11]], continuous_x_values[i-11:i+1]]),
+                y_values = np.concatenate([[continuous_y_values[i-11]], [y+continuous_Q for y in continuous_y_values[i-11:i+1]]]),
+                line_color = GREEN,
+                stroke_width = 2,
+                add_vertex_dots=False,
+        )
+
+        s_limit = ax2.get_horizontal_line(ax2.c2p(365, 200), line_config={"dashed_ratio": 0.9}, stroke_width=2, color=DARK_BLUE)
+
+        continuous_model = VGroup(ax2, continuous_plot, s_limit, continuous_ip)
+        
         # Periodic Review
         ax3 = Axes(
-            x_range=[0, 365, 73], y_range=[0, 500, 100],
+            x_range=[0, 365, 73], y_range=[0, 600, 100],
             x_length=x_axis_lenght, y_length=y_axis_length,
             axis_config={"color": BLACK,"font_size": 24,},
             tips=False,
         )
 
-        models = VGroup(epq_model, ax2, ax3)
+        S = 450
+        a = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
+        b = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
+        c = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
+        d = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
+        e = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
 
+        periodic_y_values = a + b + c + d + e
+        periodic_x_values = np.linspace(start=0, stop=365, num=len(periodic_y_values))
+        for i in [30, 61, 92, 123]:
+            periodic_x_values[i+1] = periodic_x_values[i]
+
+        periodic_plot = ax3.plot_line_graph(
+            x_values = periodic_x_values,
+            y_values = periodic_y_values,
+            line_color = RED,
+            stroke_width = 3,
+            add_vertex_dots=False,
+        )
+
+        S_limit = ax3.get_horizontal_line(ax3.c2p(365, 450), line_config={"dashed_ratio": 0.9}, stroke_width=2, color=DARK_BLUE)
+
+        periodic_ip = VGroup()
+        for i in [30, 61, 92, 123]:
+            periodic_ip += ax3.plot_line_graph(
+                x_values = np.concatenate([[periodic_x_values[i-11]], periodic_x_values[i-11:i+1]]),
+                y_values = np.concatenate([[periodic_y_values[i-11]], [y+S-periodic_y_values[i] for y in periodic_y_values[i-11:i+1]]]),
+                line_color = GREEN,
+                stroke_width = 2,
+                add_vertex_dots=False,
+        )
+
+        periodic_model = VGroup(ax3, periodic_plot, S_limit, periodic_ip)
+
+        # All models and zoom out
+        models = VGroup(epq_model, continuous_model, periodic_model)
         self.add(models.arrange(DOWN, buff=1, center=False, aligned_edge=LEFT).move_to([15.75, 0, 0]))
 
         self.play(self.camera.frame.animate.scale(2.25).move_to([9.5, 0, 0]), run_time=1)
+        self.wait(7)
 
-        self.wait(2)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects], run_time=1 # FadeOut all mobjects in this scene
+        )
+
+        self.wait(1)
 

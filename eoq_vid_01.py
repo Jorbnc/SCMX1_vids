@@ -5,6 +5,7 @@ from itertools import *
 COLOR_1 = MBLACK
 COLOR_2 = DBLUE
 COLOR_3 = MRED
+COLOR_4 = DRED
 
 # EOQ Formula
 formula = MathTex(r"Q^{*} = \sqrt{\frac{2Dc_{t}}{c_{e}}}", color=COLOR_1).move_to([0, 0, 0])
@@ -132,7 +133,8 @@ class eoq_01_02(MovingCameraScene):
         for x in epq_values[1::2]: # Starting at index 1, every 2 indices
             epq_vlines += ax1.get_vertical_line(ax1.c2p(x, 350),
                                                 line_config={"dashed_ratio": 0.8}, color=COLOR_2)
-        epq_model = VGroup(ax1, epq, epq_vlines)
+        epq_text = Tex(r"Economic Production Quantity").scale(0.95).next_to(ax1.c2p(5, 420), RIGHT)
+        epq_model = VGroup(ax1, epq, epq_vlines, epq_text)
 
         # ============= CONTINUOUS REVIEW
         ax2 = Axes(x_range=[0, 365, 73], y_range=[0, 600, 100],
@@ -142,7 +144,7 @@ class eoq_01_02(MovingCameraScene):
         def get_continuous_data(I_0, s, Q):
             x_onhand, x_ip, time = [0], [0], 0
             y_onhand, y_ip, level = [I_0], [I_0], I_0
-            for _ in range(100):
+            for _ in range(96):
                 time += 2.34
                 level -= random.randint(1,25)
                 if level > s:
@@ -168,53 +170,61 @@ class eoq_01_02(MovingCameraScene):
                                             y_values = continuous_y_ip,
                                             line_color = COLOR_2, stroke_width=2, add_vertex_dots=False)
         continuous_ip = DashedVMobject(continuous_ip["line_graph"], num_dashes=250)
-        s_limit = ax2.get_horizontal_line(ax2.c2p(365, s), line_config={"dashed_ratio": 0.9}, stroke_width=2, color=COLOR_3)
-
-        continuous_model = VGroup(ax2, continuous_onhand, s_limit, continuous_ip)
+        s_limit = ax2.get_horizontal_line(ax2.c2p(365, s), line_config={"dashed_ratio": 0.9}, stroke_width=3, color=COLOR_4)
+        continuous_text = Tex(r"Continuous Review").scale(0.95).next_to(ax2.c2p(5, 600), RIGHT)
+        continuous_model = VGroup(ax2, continuous_onhand, s_limit, continuous_ip, continuous_text)
         
         # ============= PERIODIC REVIEW
         ax3 = Axes(x_range=[0, 365, 73], y_range=[0, 600, 100],
                    x_length=x_axis_lenght, y_length=y_axis_length,
                    axis_config={"color":COLOR_1,"font_size": 24}, tips=False)
         
-        S = 450
-        a = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
-        b = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
-        c = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
-        d = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
-        e = list(accumulate([S] + [random.randint(-20,-1) for _ in range(30)]))
-        periodic_y_values = a + b + c + d + e
-        periodic_x_values = np.linspace(start=0, stop=365, num=len(periodic_y_values))
-        for i in [30, 61, 92, 123]:
-            periodic_x_values[i+1] = periodic_x_values[i]
+        def get_periodic_data(I_0, S):
+            x_onhand, x_ip, time = [0], [0], 0
+            y_onhand, y_ip, level = [I_0], [I_0], I_0
+            for _ in range(5):
+                for _ in range(20):
+                    level -= random.randint(1,22)
+                    time += 2.44
+                    x_onhand.append(time), y_onhand.append(level)
+                    x_ip.append(time), y_ip.append(level)
+                x_ip.append(time), y_ip.append(S)
+                diff = S - y_onhand[-1]
+                for _ in range(10):
+                    level -= random.randint(1,22)
+                    time += 2.34
+                    x_onhand.append(time), y_onhand.append(level)
+                    x_ip.append(time), y_ip.append(level + diff)
+                level += diff
+                x_onhand.append(time), y_onhand.append(level)
 
-        periodic_plot = ax3.plot_line_graph(
-            x_values = periodic_x_values,
-            y_values = periodic_y_values,
-            line_color = COLOR_2, stroke_width = 3, add_vertex_dots=False)
+            return x_onhand, y_onhand, x_ip, y_ip, S
+            
+        periodic_x_onhand, periodic_y_onhand, periodic_x_ip, periodic_y_ip, S = get_periodic_data(I_0=400, S=550)
 
-        S_limit = ax3.get_horizontal_line(ax3.c2p(365, 550), line_config={"dashed_ratio": 0.9}, stroke_width=2, color=COLOR_3)
-
-        periodic_ip = VGroup() # Inventory Position
-        for i in [30, 61, 92, 123]:
-            ax3_lines = ax3.plot_line_graph(
-                x_values = np.concatenate([[periodic_x_values[i-11]], periodic_x_values[i-11:i+1]]),
-                y_values = np.concatenate([[periodic_y_values[i-11]], [y+S-periodic_y_values[i] for y in periodic_y_values[i-11:i+1]]]),
-                line_color = COLOR_2, stroke_width = 2, add_vertex_dots=False)
-            periodic_ip += DashedVMobject(ax3_lines["line_graph"], num_dashes=20)
-
-        periodic_model = VGroup(ax3, periodic_plot, S_limit, periodic_ip)
+        periodic_plot = ax3.plot_line_graph(x_values = periodic_x_onhand,
+                                            y_values = periodic_y_onhand,
+                                            line_color = COLOR_2, stroke_width = 3, add_vertex_dots=False)
+        periodic_ip = ax2.plot_line_graph(x_values = periodic_x_ip,
+                                            y_values = periodic_y_ip,
+                                            line_color = COLOR_2, stroke_width=2, add_vertex_dots=False)
+        periodic_ip = DashedVMobject(periodic_ip["line_graph"], num_dashes=250)
+        S_limit = ax3.get_horizontal_line(ax3.c2p(365, S), line_config={"dashed_ratio": 0.9}, stroke_width=3, color=COLOR_4)
+        periodic_text = Tex(r"Periodic Review").scale(0.95).next_to(ax3.c2p(5, 620), RIGHT)
+        
+        periodic_model = VGroup(ax3, periodic_plot, S_limit, periodic_ip, periodic_text)
 
         # ============= ADD AXIS LABELS TO ALL MODELS (VGROUPS)
         for ax, model in [(ax1, epq_model), (ax2, continuous_model), (ax3, periodic_model)]:
             model += ax.get_x_axis_label(Tex("Time").scale(0.65), edge=DOWN, direction=DOWN, buff=0.1)
 
         # All models and zoom out
-        VGroup(epq_model, continuous_model, periodic_model).arrange(DOWN, buff=1, center=False, aligned_edge=LEFT).move_to([15.75, 0, 0])
+        VGroup(epq_model, continuous_model, periodic_model).arrange(DOWN, buff=0.75, center=False, aligned_edge=LEFT).move_to([15.75, 0, 0])
         
         final_arrow = Arrow(start=LEFT, end=RIGHT, color=COLOR_3).next_to(formula_and_surr, RIGHT*2)
         core_concept_text = Tex(r"Core Concept").next_to(final_arrow, RIGHT*2)
-        next_text = Tex(r"Fundamental\\Strategy").next_to(final_arrow, RIGHT*2)
+        next_text = Tex(r"Fundamental\\Strategy") # Tex(r"Fundamental\\Strategy", tex_environment="flushleft") # to align left
+        next_text.next_to(final_arrow, RIGHT*2)
 
         self.play(self.camera.frame.animate.scale(1.15).move_to([1.25, 0, 0]),
                   GrowArrow(final_arrow), Write(core_concept_text), run_time=1)
@@ -228,9 +238,9 @@ class eoq_01_02(MovingCameraScene):
                   FadeIn(ax2), FadeIn(continuous_model[-1]),
                   FadeIn(ax3), FadeIn(periodic_model[-1]),
                   run_time=1.25)
-        self.play(Create(epq), Create(epq_vlines),
-                  Create(continuous_ip), Create(continuous_onhand), Create(s_limit),
-                  Create(periodic_ip), Create(periodic_plot), Create(S_limit),
+        self.play(Create(epq), Create(epq_vlines), Write(epq_text),
+                  Create(continuous_ip), Create(continuous_onhand), Create(s_limit), Write(continuous_text),
+                  Create(periodic_ip), Create(periodic_plot), Create(S_limit), Write(periodic_text),
                   run_time=2)
         self.wait(1.25)
         self.play(*[FadeOut(mob)for mob in self.mobjects], run_time=1) # FadeOut all mobjects in this scene

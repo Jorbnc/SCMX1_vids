@@ -60,7 +60,7 @@ class eoq_01_01(MovingCameraScene):
         # SECOND AXIS: DEFINE + CREATE
         grid_2= Axes(x_range=[0, 1600, 200], y_range=[0, 3000, 500],
                      x_length=11, y_length=3.5,
-                     axis_config={"color": COLOR_1,"font_size": 24},tips=False)
+                     axis_config={"color": COLOR_1,"font_size": 24}, tips=False)
         y_label_2 = grid.get_y_axis_label(Tex("Cost").scale(0.65).rotate(90 * DEGREES),
                                         edge=LEFT, direction=LEFT, buff=0.3)
         x_label_2 = grid.get_x_axis_label(Tex("Order Quantity").scale(0.65),
@@ -245,3 +245,31 @@ class eoq_01_02(MovingCameraScene):
         self.wait(1.25)
         self.play(*[FadeOut(mob)for mob in self.mobjects], run_time=1) # FadeOut all mobjects in this scene
         self.wait(1)
+
+class eoq_01_03(MovingCameraScene):
+
+    def construct(self):
+
+        timeline = NumberLine(x_range=[1900, 2030, 10],  length=12,
+                              numbers_to_include=[1900, 1913, 1950, 2000, 2020],
+                              tick_size=0.075, font_size=25,
+                              decimal_number_config={"group_with_commas": False,
+                                                     "num_decimal_places": 0}).move_to([0,-3,0])
+        
+        text_1913 = MathTex(r"1913", color=COLOR_3)
+        dot_1913 = Dot(timeline.n2p(1913), 0.05, color=COLOR_3)
+        self.play(GrowFromEdge(timeline, LEFT), run_time=1)
+        self.play(Write(text_1913), run_time=0.5)
+        self.play(ReplacementTransform(text_1913, dot_1913), run_time=0.75)
+        
+        harris_pic = FramedImage("img/harris2.jpg", height=4.5)
+        harris_name = Tex("Ford Whitman Harris", font_size=25).next_to(harris_pic, UP)
+        harris = Group(harris_pic, harris_name)
+        self.play(FadeIn(harris_pic), Write(harris_name), run_time=1)
+        self.wait(5)
+
+        paper1 = FramedImage("img/paper1.png", height=4.5).move_to([2,0,0])
+        source = Tex(r"Images: www.academia.edu")
+        self.play(harris.animate.shift(LEFT*2), FadeIn(paper1), run_time=1)
+        
+        self.wait(7)

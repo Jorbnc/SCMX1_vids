@@ -1,8 +1,7 @@
 - [Introduction to the Video](#introduction-to-the-video)
-  - [Briefly introduce the topic of EOQ.](#briefly-introduce-the-topic-of-eoq)
+  - [Brief introduction of the EOQ](#brief-introduction-of-the-eoq)
   - [Explain the purpose of the video and what viewers will learn.](#explain-the-purpose-of-the-video-and-what-viewers-will-learn)
 - [Brief History and Relevance](#brief-history-and-relevance)
-  - [Discuss the origins of the EOQ formula.](#discuss-the-origins-of-the-eoq-formula)
 - [But what is the Economic Order Quantity?](#but-what-is-the-economic-order-quantity)
   - [A simple definition of EOQ.](#a-simple-definition-of-eoq)
   - [Present the most basic version of the EOQ formula.](#present-the-most-basic-version-of-the-eoq-formula)
@@ -50,18 +49,14 @@
 
 # Introduction to the Video
 
-<span style="color:green">Testing Color</span>
-
-## Briefly introduce the topic of EOQ.
+## Brief introduction of the EOQ
 
 The Economic Order Quantity (EOQ) stands as a cornerstone in Operations and Supply Chain Management. This analytical tool is designed to aid organizations in determining the optimal order size that minimizes the total costs associated with inventory, including both holding and ordering expenses. Due to its simplicity and effectiveness, the EOQ model is extensively taught as a core concept in introductory courses and widely featured in academic textbooks. It serves as a fundamental strategy for inventory optimization and a preliminary step towards developing more sophisticated inventory models and policies.
 
 ## Explain the purpose of the video and what viewers will learn.
-Foo
+<span style="color:green">Testing Color</span>
 
 # Brief History and Relevance
-
-## Discuss the origins of the EOQ formula.
 
 In 1913, Ford Whitman Harris, an American Production Engineer, introduced the EOQ model through his paper *"How many parts to make at once?"*, published in *"Factory, The Magazine of Management"*.
 

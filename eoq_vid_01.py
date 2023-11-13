@@ -269,7 +269,50 @@ class eoq_01_03(MovingCameraScene):
         self.wait(5)
 
         paper1 = FramedImage("img/paper1.png", height=4.5).move_to([2,0,0])
-        source = Tex(r"Images: www.academia.edu")
-        self.play(harris.animate.shift(LEFT*2), FadeIn(paper1), run_time=1)
+        source = Tex(r"Images: www.academia.edu", font_size=15).to_edge(DOWN + RIGHT).shift(UP)
+        self.play(harris.animate.shift(LEFT*2), FadeIn(paper1), Write(source), run_time=1)
+        factory = Tex(r"\textit{Factory,\\The Magazine of Management}", font_size=15).next_to(paper1, UP)
+        self.wait(2)
+        self.play(Write(factory), run_time=1)
+        self.wait(1)
+
+        self.play(FadeOut(harris), FadeOut(paper1), FadeOut(factory), FadeOut(source), run_time=0.75)
+        self.wait(1)
+
+        paper2 = FramedImage("img/paper2.png", height=4.5)
+        self.play(FadeIn(paper2), Write(source), run_time=1)
+        self.wait(3.5)
+
+        less_visible = Tex(r"\textbf{Less visible:}\\Capital Interest\\Depreciation",
+                           tex_environment="flushleft", font_size=20)
+        vs = Tex(r"vs.", font_size=20)
+        more_apparent = Tex(r"\textbf{More apparent:}\\Ordering or Setup Costs",
+                            tex_environment="flushleft", font_size=20)
+        text_row = VGroup(less_visible, vs, more_apparent).arrange(RIGHT, buff=1).next_to(paper2, UP)
+        balance = Tex(r"Balance", font_size=20).next_to(vs, UP)
         
-        self.wait(7)
+        self.play(Write(balance), run_time=0.5)
+        self.wait(2.5)
+        self.play(Write(less_visible), run_time=1)
+        self.wait(1)
+        self.play(Write(vs), run_time=0.25)
+        self.wait(1)
+        self.play(Write(more_apparent), run_time=1)
+        self.wait(1)
+
+        self.play(FadeOut(text_row), FadeOut(balance), FadeOut(source), FadeOut(paper2), run_time=1)
+        self.wait(0.25)
+
+        timeline_dot = VGroup(timeline, dot_1913)
+        self.play(timeline_dot.animate.move_to([0,0,0]), run_time=0.75, rate_func=smooth)
+        self.wait(2)
+        
+        here_text = Tex(r"You're\\around here", font_size=20, color=COLOR_3).next_to(timeline.n2p(2025), UP*0.75)
+        self.play(Write(here_text), run_time=1)
+        self.wait(3.5)
+        eoq_arrow = Arrow(timeline.n2p(1913), timeline.n2p(1970), color=COLOR_3).shift(LEFT*0.25 + UP*0.5)
+        self.play(GrowArrow(eoq_arrow), run_time=4, rate_func=linear)
+
+        self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
+
+        self.wait(2)

@@ -2,9 +2,9 @@
   - [Brief introduction of the EOQ](#brief-introduction-of-the-eoq)
   - [Explain the purpose of the video and what viewers will learn.](#explain-the-purpose-of-the-video-and-what-viewers-will-learn)
 - [Brief History and Relevance](#brief-history-and-relevance)
-- [But what is the Economic Order Quantity?](#but-what-is-the-economic-order-quantity)
-  - [A simple definition of EOQ.](#a-simple-definition-of-eoq)
-  - [Present the most basic version of the EOQ formula.](#present-the-most-basic-version-of-the-eoq-formula)
+- [The Economic Order Quantity?](#the-economic-order-quantity)
+  - [Inventory costs](#inventory-costs)
+  - [Formula derivation](#formula-derivation)
   - [Walk through each component of the formula:](#walk-through-each-component-of-the-formula)
     - [Demand rate (D)](#demand-rate-d)
     - [Setup costs (S)](#setup-costs-s)
@@ -65,13 +65,11 @@ His work emerged from his understanding of manufacturing processes and costs, em
 Following the initial publication, various adaptations of the EOQ formula were proposed.
 However, Harris's fundamental approach remained the standard for order-quantity analysis for decades.
 
-# But what is the Economic Order Quantity?
+# The Economic Order Quantity?
 
-## A simple definition of EOQ.
-[...]
-Harris represented the trade-off between ordering and holding costs using mathematical cost functions. 
+## Inventory costs
 
-## Present the most basic version of the EOQ formula.
+## Formula derivation
 Foo
 ## Walk through each component of the formula:
 ### Demand rate (D)

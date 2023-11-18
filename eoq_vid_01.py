@@ -323,12 +323,66 @@ acquisition_math = MathTex(r"cD").next_to(acquisition_text, DOWN*2)
 vspace = 2
 stroke_width = 2
 
+Tex.set_default(font_size=25)
+
 class eoq_01_04(MovingCameraScene):
 
     def construct(self):
+        self.wait(2)
 
-        # Some Defaults
-        Tex.set_default(font_size=25)
+        raw = ImageMobject("sku/materials_steel_03.png")
+        comp = Group(ImageMobject("sku/parts_metal_03.png"),
+                     ImageMobject("sku/tech_circuit_02.png")).arrange(DOWN, buff=1)
+        final = Group(ImageMobject("sku/tech_smartphone_02.png"),
+                      ImageMobject("sku/vehicle_motorcycle_02.png")).arrange(DOWN, buff=1)
+        for img in [comp, final]:
+            img.width = 2
+        raw.width = 3
+        inv_img = Group(raw, comp, final).arrange(RIGHT, buff=1).shift(DOWN*0.25)
+
+        raw_txt = Tex("Raw Materials")
+        comp_txt = Tex("Components")
+        final_txt = Tex("Final Products")
+        inv_all = Group(raw_txt, comp_txt, final_txt,
+                        raw, comp, final).arrange_in_grid(rows=2,
+                                                          buff=0.75,
+                                                          col_alignments="ccc",
+                                                          row_alignments="cc",
+                                                          col_widths=[3,3,3],
+                                                          row_heights=[2,2]).shift(LEFT*0.25)
+
+        self.play(FadeIn(inv_img))
+        self.wait(3)
+
+
+        for x in [raw_txt, comp_txt, final_txt]:
+            self.play(Write(x), run_time=0.5)
+            self.wait(0.5)
+
+        self.wait(2)
+
+        sku = RoundedRectangle(corner_radius=0.1, width=0.75, height=0.75, color=COLOR_2, fill_opacity=0.8)
+
+        Animations = []
+        for x in inv_all:
+            Animations.append(x.animate.scale(0).move_to(sku.get_center()))
+
+        self.play(GrowFromCenter(sku), *Animations)
+        
+        sku_2 = RoundedRectangle(corner_radius=0.1,
+                                 width=0.75, height=0.75,
+                                 color=COLOR_2, fill_opacity=0.8).scale(0.25)
+        sku_matrix = VGroup(*[sku_2.copy() for _ in range(120)]) # * is used to unroll (input many args)
+        sku_matrix.arrange_in_grid(rows=6, buff=0.25)
+
+        self.play(ReplacementTransform(sku, sku_matrix), FadeOut(inv_all))
+        
+        self.wait(2)
+            
+
+class eoq_01_05(MovingCameraScene): # Material Cost
+
+    def construct(self):
 
         self.play(Write(acquisition_text), run_time=1)
         self.wait(1)
@@ -378,7 +432,8 @@ class eoq_01_04(MovingCameraScene):
         self.wait(2)
         self.play(FadeOut(pack_n_label_arrow), FadeOut(pack_n_label_text), run_time=0.75)
         self.wait(1.75)
-        freight_mhandling_text = Tex(r"(Freight Transportation \& Material Handling)")
+        freight_mhandling_text = Tex("(", "Variable, ", r"Per-unit) Freight Transportation \& Material Handling")
+        freight_mhandling_text.set_color_by_tex('Variable', COLOR_3)
         VGroup(purchase_prep_text, freight_mhandling_text).arrange(DOWN, buff=0.35, center=False, aligned_edge=LEFT)
         self.play(Write(freight_mhandling_text), run_time=1.25)
         self.wait(2)
@@ -391,7 +446,8 @@ class eoq_01_04(MovingCameraScene):
         manufacturing_img = FramedImage("img/manufacturing.png", width=4.2)[0]
         producers_text = Tex(r"\textbf{Unit Cost for Producers:}")
         total_unit_prodcost = Tex(r"Total Unitary Production Cost")
-        prod_related = Tex(r"(Unitary Material Handling \& Transportation Costs)")
+        prod_related = Tex("(", "Variable, ", "Per-unit) Material Handling \& Transportation")
+        prod_related.set_color_by_tex('Variable', COLOR_3)
         prod_totalunit = VGroup(producers_text,
                                 total_unit_prodcost,
                                 prod_related).arrange(DOWN,
@@ -409,7 +465,7 @@ class eoq_01_04(MovingCameraScene):
         self.play(FadeOut(manufacturing_img), FadeOut(prod_totalunit), FadeOut(c_surr), run_time=1)
         self.wait(2)
 
-class eoq_01_05(MovingCameraScene):
+class eoq_01_06(MovingCameraScene):
 
     def construct(self):
 

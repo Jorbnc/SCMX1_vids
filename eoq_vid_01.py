@@ -376,8 +376,7 @@ class eoq_01_04(MovingCameraScene):
                                  width=1, height=1,
                                  color=COLOR_1, stroke_color=COLOR_4,
                                  stroke_width=2, fill_opacity=1).scale(0.25)
-        sku_matrix = VGroup(*[sku_2.copy() for _ in range(200)]) # * is used to unroll (input many args)
-        sku_matrix.arrange_in_grid(rows=8, buff=0.1)
+        sku_matrix = VGroup(*[sku_2.copy() for _ in range(200)]).arrange_in_grid(rows=8, buff=0.1)
         surr_sku = SurroundingRectangle(sku_matrix, color=COLOR_4,
                                         buff=0.1, corner_radius=0.1, stroke_width=2)
         sku_txt = Tex("One year of demand").next_to(surr_sku, UP*0.5)
@@ -389,6 +388,17 @@ class eoq_01_04(MovingCameraScene):
         self.play(ReplacementTransform(sku_txt, unit_time_txt), GrowFromCenter(timeline),
                   FadeOut(sku_matrix), FadeOut(surr_sku))
         self.wait(3)
+
+        sku_2.scale(0.75)
+        sku_batch = VGroup(*[sku_2.copy() for _ in range(35)]).arrange_in_grid(rows=7, buff=0.1)
+        sku_batch.next_to(timeline.get_corner(UL), UP)
+        self.play(GrowFromCenter(sku_batch), run_time=0.5)
+
+        for x in range(len(sku_batch)):
+            self.play(FadeOut(sku_batch[0]), sku_batch.animate.shift(RIGHT * 0.05), run_time=0.1, rate_func=smooth)
+            sku_batch.remove(sku_batch[0])
+
+        self.wait(2)
             
 class test(Scene):
 

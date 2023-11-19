@@ -352,33 +352,54 @@ class eoq_01_04(MovingCameraScene):
                                                           row_heights=[2,2]).shift(LEFT*0.25)
 
         self.play(FadeIn(inv_img))
-        self.wait(3)
+        self.wait(4)
 
 
         for x in [raw_txt, comp_txt, final_txt]:
             self.play(Write(x), run_time=0.5)
             self.wait(0.5)
 
-        self.wait(2)
 
-        sku = RoundedRectangle(corner_radius=0.1, width=0.75, height=0.75, color=COLOR_2, fill_opacity=0.8)
+        sku = RoundedRectangle(corner_radius=0.1, width=0.75, height=0.75,
+                               color=COLOR_1, stroke_color=COLOR_4,
+                               stroke_width=2, fill_opacity=1)
 
         Animations = []
         for x in inv_all:
             Animations.append(x.animate.scale(0).move_to(sku.get_center()))
 
-        self.play(GrowFromCenter(sku), *Animations)
-        
-        sku_2 = RoundedRectangle(corner_radius=0.1,
-                                 width=0.75, height=0.75,
-                                 color=COLOR_2, fill_opacity=0.8).scale(0.25)
-        sku_matrix = VGroup(*[sku_2.copy() for _ in range(120)]) # * is used to unroll (input many args)
-        sku_matrix.arrange_in_grid(rows=6, buff=0.25)
-
-        self.play(ReplacementTransform(sku, sku_matrix), FadeOut(inv_all))
-        
+        self.play(*Animations)
+        self.play(GrowFromCenter(sku), FadeOut(inv_all), run_time=0.5)
         self.wait(2)
+
+        sku_2 = RoundedRectangle(corner_radius=0.1,
+                                 width=1, height=1,
+                                 color=COLOR_1, stroke_color=COLOR_4,
+                                 stroke_width=2, fill_opacity=1).scale(0.25)
+        sku_matrix = VGroup(*[sku_2.copy() for _ in range(200)]) # * is used to unroll (input many args)
+        sku_matrix.arrange_in_grid(rows=8, buff=0.1)
+        surr_sku = SurroundingRectangle(sku_matrix, color=COLOR_4,
+                                        buff=0.1, corner_radius=0.1, stroke_width=2)
+        sku_txt = Tex("One year of demand").next_to(surr_sku, UP*0.5)
+        self.play(ReplacementTransform(sku, sku_matrix), Create(surr_sku), Write(sku_txt))
+        self.wait(1.5)
+
+        unit_time_txt = Tex("Unit Time")
+        timeline = NumberLine(x_range=[0,12,1], length=10).next_to(unit_time_txt, DOWN)
+        self.play(ReplacementTransform(sku_txt, unit_time_txt), GrowFromCenter(timeline),
+                  FadeOut(sku_matrix), FadeOut(surr_sku))
+        self.wait(3)
             
+class test(Scene):
+
+    def construct(self):
+
+        self.add(RoundedRectangle(corner_radius=0.1,
+                                  width=1, height=1,
+                                  color=COLOR_1,
+                                  stroke_color=COLOR_4, stroke_width=2,
+                                  fill_opacity=1).scale(1))
+
 
 class eoq_01_05(MovingCameraScene): # Material Cost
 

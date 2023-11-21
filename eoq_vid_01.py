@@ -408,7 +408,8 @@ class eoq_01_04(MovingCameraScene):
         self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
         self.wait(1)
 
-total_cost_txt = Tex(r"Total Cost $=$ Material Cost $+$ Setup Cost $+$ Holding Cost $+$ Shortage Cost", font_size=30)
+total_cost_txt = Tex(r"Total Cost $=$ Material Cost $+$ Setup Cost $+$ Holding Cost $+$ Shortage Cost",
+                     font_size=30)
 total_cost_txt.shift(UP*3)
 total_txt = total_cost_txt[0][0:10]
 material_txt = total_cost_txt[0][10:22]
@@ -428,14 +429,14 @@ class eoq_01_05(MovingCameraScene):
         self.play(Write(total_txt), run_time=0.75)
         self.wait(2.25)
         self.play(Write(material_txt), run_time=0.75)
-        self.wait(5.25)
+        self.wait(5)
 
         procurement_text = Tex(r"Procurement")
         production_text = Tex(r"Production")
         proc_or_prod = VGroup(procurement_text, production_text).arrange(RIGHT, buff=1).shift(UP*2)
         self.play(Write(procurement_text), run_time=0.75)
         self.play(Write(production_text), run_time=0.75)
-        self.play(FadeOut(proc_or_prod), run_time=0.5)
+        self.play(FadeOut(proc_or_prod), run_time=0.75)
         self.play(Write(material_math), run_time=0.75)
 
         c_arrow = Arrow(material_math.get_edge_center(LEFT) - [1.25,0,0],
@@ -472,96 +473,84 @@ class eoq_01_05(MovingCameraScene):
         VGroup(purchase_prep_text,
                merchants_text).arrange(UP, buff=0.35, center=False, aligned_edge=LEFT)
         self.play(FadeOut(c_arrow), FadeOut(c_text), FadeOut(D_arrow), FadeOut(D_text),
-                  FadeIn(merchants_img), Write(merchants_text), run_time=0.75)
+                  FadeIn(merchants_img), Write(merchants_text), 
+                  material_math[0][0].animate.set_color(COLOR_3), run_time=0.75)
         self.wait(1)
-        self.play(Write(purchase_prep_text), run_time=1)
-        self.wait(5)
+        self.play(Write(purchase_prep_text[0][0:13]), run_time=0.75)
+        self.wait(1.25)
+        self.play(Write(purchase_prep_text[0][13:]), run_time=0.75)
+        self.wait(3.25)
         self.play(GrowArrow(pack_n_label_arrow), Write(pack_n_label_text), run_time=1)
         self.wait(1.5)
         self.play(FadeOut(pack_n_label_arrow), FadeOut(pack_n_label_text), run_time=0.75)
         self.wait(0.25)
         freight_mhandling_text = Tex("(Per-unit) Freight Transportation \& Material Handling")
-        VGroup(purchase_prep_text, freight_mhandling_text).arrange(DOWN, buff=0.35, center=False, aligned_edge=LEFT)
+        VGroup(purchase_prep_text,
+               freight_mhandling_text).arrange(DOWN, buff=0.35, center=False, aligned_edge=LEFT)
         self.play(Write(freight_mhandling_text), run_time=1.25)
-        self.wait(4)
+        self.wait(3.25)
+        load_unload = Tex(r"Loading \& Unloading").next_to(
+            freight_mhandling_text.get_edge_center(RIGHT) - [1,0.25,0],
+            DOWN*1.5)
+        load_arrow = Arrow(load_unload.get_center() +  [0,0.8,0],
+                           load_unload.get_center(),
+                           max_tip_length_to_length_ratio=0.25,
+                           color=COLOR_3, stroke_width=stroke_width)
+        self.play(GrowArrow(load_arrow), Write(load_unload), run_time=0.75)
+        self.wait(0.5)
         self.play(FadeOut(merchants_img),
                   FadeOut(merchants_text),
                   FadeOut(purchase_prep_text),
-                  FadeOut(freight_mhandling_text))
+                  FadeOut(freight_mhandling_text),
+                  FadeOut(load_unload),
+                  FadeOut(load_arrow),
+                  )
 
-        # # FOR PRODUCERS
-        # manufacturing_img = FramedImage("img/manufacturing.png", width=4.2)[0]
-        # producers_text = Tex(r"\textbf{Unit Cost for Producers:}")
-        # total_unit_prodcost = Tex(r"Total Unitary Production Cost")
-        # prod_related = Tex("(", "Variable, ", "Per-unit) Material Handling \& Transportation")
-        # prod_related.set_color_by_tex('Variable', COLOR_3)
-        # prod_totalunit = VGroup(producers_text,
-        #                         total_unit_prodcost,
-        #                         prod_related).arrange(DOWN,
-        #                                               buff=0.35,
-        #                                               center=False,
-        #                                               aligned_edge=LEFT)
-        # Group(manufacturing_img,
-        #       prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_math, DOWN*2)
-        # self.play(FadeIn(manufacturing_img), Write(producers_text), run_time=0.75)
-        # self.wait(0.5)
-        # self.play(Write(total_unit_prodcost), run_time=0.75)
-        # self.wait(2)
-        # self.play(Write(prod_related), run_time=1)
-        # self.wait(5)
-        # self.play(FadeOut(manufacturing_img), FadeOut(prod_totalunit), FadeOut(c_surr), run_time=1)
-        # self.wait(2)
+        # FOR PRODUCERS
+        manufacturing_img = FramedImage("img/manufacturing.png", width=4.3)[0]
+        producers_text = Tex(r"\textbf{Unit Cost for Producers:}")
+        total_unit_prodcost = Tex(r"Total Unitary Production Cost:")
+        prod_related = Tex("Raw Materials $+$ Direct Labor $+$ Overhead")
+        prod_totalunit = VGroup(producers_text,
+                                total_unit_prodcost,
+                                prod_related).arrange(DOWN,
+                                                      buff=0.35,
+                                                      center=False,
+                                                      aligned_edge=LEFT)
+        Group(manufacturing_img,
+              prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_math, DOWN*2)
+        self.play(FadeIn(manufacturing_img), Write(producers_text), run_time=0.75)
+        self.wait(2.5)
+        self.play(Write(prod_related[0][0:12]), run_time=0.75)
+        self.wait(1.75)
+        self.play(Write(total_unit_prodcost), run_time=0.75)
+        self.wait(2.25)
+        self.play(Write(prod_related[0][12:]), run_time=0.75)
+        self.wait(1.25)
+        self.play(FadeOut(manufacturing_img), FadeOut(prod_totalunit),
+                  material_math[0][0].animate.set_color(COLOR_1),
+                  run_time=1)
+        self.wait(2.85)
+        
+        D_surr = SurroundingRectangle(material_math[0][1],
+                                      color=COLOR_3, buff=0.05, stroke_width=stroke_width)
+        self.play(Create(D_surr), run_time=1)
+        self.wait(2.5)
+        known = Tex("Known and Constant", color=COLOR_3).next_to(D_surr.get_center(), DOWN*3.25)
+        self.play(Write(known), run_time=1.25)
+        self.wait(2)
+        self.play(FadeOut(D_surr), FadeOut(known), run_time=1)
+        self.wait(1.75)
+        self.play(FadeOut(material_txt), material_math.animate.move_to(material_txt.get_center()))
+        self.wait(1.5)
+
+        self.play(Write(setup_txt))
+
+material_math.move_to(material_txt.get_center())
 
 class eoq_01_06(MovingCameraScene):
 
     def construct(self):
-
-        Tex.set_default(font_size=25)
-
-        self.add(material_text, material_math)
         
-        D_arrow = Arrow(material_math.get_edge_center(RIGHT) + [1.5,0,0],
-                material_math.get_edge_center(RIGHT),
-                max_tip_length_to_length_ratio=0.075,
-                color=COLOR_3,
-                stroke_width=stroke_width)
-        D_text = MathTex(r"\frac{units}{year}", font_size=25).next_to(D_arrow, RIGHT)
-        D_surr = SurroundingRectangle(material_math[0][1],
-                                      color=COLOR_3, buff=0.05, stroke_width=stroke_width)
-
-        demand_horizon = Axes(x_range=[0, 12, 1], y_range=[0,500,100],
-                              x_length=11, y_length=3.5,
-                              x_axis_config={"numbers_to_include": [1,12],
-                                           "color": COLOR_1,
-                                           "font_size": 25},
-                              tips=False).next_to(material_math, DOWN*2)
-        
-        y_label = demand_horizon.get_y_axis_label(Tex("Demand").scale(1).rotate(90 * DEGREES),
-                                                  edge=LEFT, direction=LEFT, buff=0.2)
-        x_label = demand_horizon.get_x_axis_label(Tex("Months").scale(1),
-                                                  edge=DOWN, direction=DOWN, buff=0)
-
-        self.wait(3.5)
-        self.play(Create(D_surr), Write(D_text), GrowArrow(D_arrow), run_time=1)
+        self.add(total_txt, material_math, setup_txt)
         self.wait(2)
-
-        self.play(Create(demand_horizon), Write(x_label), Write(y_label), run_time=1)
-        self.wait(2)
-
-        constant_D = demand_horizon.plot_line_graph(x_values = [0,12,1],
-                                                    y_values = [400,400],
-                                                    line_color = COLOR_3, stroke_width=3, add_vertex_dots=False)
-        
-        self.play(Create(constant_D), run_time=3, rate_func=linear)
-        self.wait(3)
-        self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
-        self.wait(1)
-
-# class eoq_01_06(MovingCameraScene):
-
-#     def construct(self):
-        
-#         # CONSTANT PARAMETERS ASSUMPTION
-#         # c is not subject to discounts and costs don't change
-#         # c_t: ordering or setup costs are constant
-#         # c_e: 2

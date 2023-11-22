@@ -3,16 +3,16 @@
   - [Explain the purpose of the video and what viewers will learn.](#explain-the-purpose-of-the-video-and-what-viewers-will-learn)
 - [Brief History and Relevance](#brief-history-and-relevance)
 - [The Economic Order Quantity](#the-economic-order-quantity)
-  - [Inventory costs](#inventory-costs)
+  - [Inventory Costs](#inventory-costs)
   - [Total Cost Expression](#total-cost-expression)
   - [Formula derivation](#formula-derivation)
 - [Practical Example](#practical-example)
   - [Provide a step-by-step example using real-life figures to calculate EOQ.](#provide-a-step-by-step-example-using-real-life-figures-to-calculate-eoq)
 - [Applicability of EOQ](#applicability-of-eoq)
+  - [Some comments](#some-comments)
   - [Scenarios where EOQ is particularly useful (e.g., stable demand).](#scenarios-where-eoq-is-particularly-useful-eg-stable-demand)
-  - [Types of businesses that benefit from EOQ.](#types-of-businesses-that-benefit-from-eoq)
 - [Limitations of the EOQ Model](#limitations-of-the-eoq-model)
-  - [Discuss the assumptions underlying the EOQ model:](#discuss-the-assumptions-underlying-the-eoq-model)
+  - [Costs and parameters are often estimations, because most accounting system don't report such concepts.](#costs-and-parameters-are-often-estimations-because-most-accounting-system-dont-report-such-concepts)
     - [Constant demand rate](#constant-demand-rate)
     - [Constant lead time](#constant-lead-time)
     - [No quantity discounts](#no-quantity-discounts)
@@ -64,7 +64,7 @@ However, Harris's fundamental approach remained the standard for order-quantity 
 
 # The Economic Order Quantity
 
-## Inventory costs
+## Inventory Costs
 
 Let's explore the cost concepts involved in the derivation of the basic EOQ model.
 
@@ -84,16 +84,13 @@ For producers, the unit cost extends beyond the mere calculation of raw material
 
 Notice that there is a crucial assumption here: demand is represented by a single value, so it's said to be known and constant throughout the year. We will explore the ramifications of this assumption later.
 
-**Ordering or Setup Cost = $c_t\frac{D}{Q}$**
-
-Fixed costs associated with either ordering in bulk or producing in batches.
-- And Holding Costs, which include expenses for storing and managing inventory throughout the unit time.
-
-**Ordering or Setup Cost = $c_{t}\frac{D}{Q}$**
+**Total Setup Cost or Ordering Cost = $c_t\frac{D}{Q}$**
 
 Foo
 
 **Holding Cost = $c_{e}\frac{Q}{2}$**
+
+Holding Costs, which include expenses for storing and managing inventory throughout the unit time.
 
 Check SCMx1 PDF
 
@@ -114,8 +111,6 @@ but demand is deterministic, so we can get rid of the fourth component
 
 $0 = \frac{c_e}{2} - c_t\frac{D}{Q^2} \implies Q=\sqrt{\frac{2c_{t}D}{c_e}}$
 
-
-
 # Practical Example
 
 ## Provide a step-by-step example using real-life figures to calculate EOQ.
@@ -123,14 +118,22 @@ Foo
 
 # Applicability of EOQ
 
+## Some comments
+<span style="color:green">(check the xlsx of eoq costs, there's a little eoq introduction and comments)</span> 
+
 ## Scenarios where EOQ is particularly useful (e.g., stable demand).
-Foo
-## Types of businesses that benefit from EOQ.
 Foo
 
 # Limitations of the EOQ Model
 
-## Discuss the assumptions underlying the EOQ model:
+## Costs and parameters are often estimations, because most accounting system don't report such concepts.
+
+So we have to update them. 
+
+<span style="color:green">(parafrasis de Building Intuition. Insights... pag. 139)</span> 
+
+<span style="color:green">(there must be AI solutions and so literature for this)</span> 
+
 ### Constant demand rate
 Foo
 ### Constant lead time

@@ -408,22 +408,24 @@ class eoq_01_04(MovingCameraScene):
         self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
         self.wait(1)
 
-total_cost_txt = Tex(r"Total Cost $=$ Material Cost $+$ Setup Cost $+$ Holding Cost $+$ Shortage Cost",
-                     font_size=30)
-total_cost_txt.shift(UP*3)
-total_txt = total_cost_txt[0][0:10]
-material_txt = total_cost_txt[0][10:22]
-#setup_txt = total_cost_txt[0][22:32]
-holding_txt = total_cost_txt[0][32:44]
-shortage_txt = total_cost_txt[0][44:]
+total_cost_txt = Tex(r"Total Inventory Cost")
+total_cost_txt.shift(UP*3 + LEFT*4)
+total_cost_math = MathTex(r"= cD + c_t\frac{D}{Q} + c_e\frac{Q}{2}",
+                          font_size=30).next_to(total_cost_txt, RIGHT*0.25)
 
-material_math = MathTex(r"cD").shift(UP*2)
+equals = total_cost_math[0][0]
+material_math = total_cost_math[0][1:3]
+plus1 = total_cost_math[0][3]
+setup_math = total_cost_math[0][4:9]
+plus2 = total_cost_math[0][9]
+holding_math = total_cost_math[0][10:]
 
 class eoq_01_05(MovingCameraScene):
 
     def construct(self):
-        
-        self.play(Write(total_txt), run_time=0.75)
+        material_eq = MathTex(r"cD").shift(UP*1.5)
+        material_txt = Tex("Material Cost").shift(UP*2.5)
+        self.play(Write(total_cost_txt), run_time=0.75)
         self.wait(2.25)
         self.play(Write(material_txt), run_time=0.75)
         self.wait(5)
@@ -434,18 +436,18 @@ class eoq_01_05(MovingCameraScene):
         self.play(Write(procurement_text), run_time=0.75)
         self.play(Write(production_text), run_time=0.75)
         self.play(FadeOut(proc_or_prod), run_time=0.75)
-        self.play(Write(material_math), run_time=0.75)
+        self.play(Write(material_eq), run_time=0.75)
 
-        c_arrow = Arrow(material_math.get_edge_center(LEFT) - [1.25,0,0],
-                        material_math.get_edge_center(LEFT),
+        c_arrow = Arrow(material_eq.get_edge_center(LEFT) - [1.25,0,0],
+                        material_eq.get_edge_center(LEFT),
                         max_tip_length_to_length_ratio=0.075,
                         color=COLOR_3,
                         stroke_width=stroke_width)
         c_text = Tex(r"Unit Cost").next_to(c_arrow, LEFT)
         self.play(Write(c_text), GrowArrow(c_arrow), run_time=0.75)
         self.wait(1)
-        D_arrow = Arrow(material_math.get_edge_center(RIGHT) + [1.25,0,0],
-                        material_math.get_edge_center(RIGHT),
+        D_arrow = Arrow(material_eq.get_edge_center(RIGHT) + [1.25,0,0],
+                        material_eq.get_edge_center(RIGHT),
                         max_tip_length_to_length_ratio=0.075,
                         color=COLOR_3,
                         stroke_width=stroke_width)
@@ -465,13 +467,13 @@ class eoq_01_05(MovingCameraScene):
         Group(merchants_img,
               purchase_prep_text,
               pack_n_label_arrow,
-              pack_n_label_text).arrange(RIGHT, buff=0.35).next_to(material_math, DOWN*3)
+              pack_n_label_text).arrange(RIGHT, buff=0.35).next_to(material_eq, DOWN*1.75)
         merchants_text = Tex(r"\textbf{Unit Cost for Merchants:}")
         VGroup(purchase_prep_text,
                merchants_text).arrange(UP, buff=0.35, center=False, aligned_edge=LEFT)
         self.play(FadeOut(c_arrow), FadeOut(c_text), FadeOut(D_arrow), FadeOut(D_text),
                   FadeIn(merchants_img), Write(merchants_text), 
-                  material_math[0][0].animate.set_color(COLOR_3), run_time=0.75)
+                  material_eq[0][0].animate.set_color(COLOR_3), run_time=0.75)
         self.wait(1)
         self.play(Write(purchase_prep_text[0][0:13]), run_time=0.75)
         self.wait(1.25)
@@ -515,7 +517,7 @@ class eoq_01_05(MovingCameraScene):
                                                       center=False,
                                                       aligned_edge=LEFT)
         Group(manufacturing_img,
-              prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_math, DOWN*2)
+              prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_eq, DOWN*1.5)
         self.play(FadeIn(manufacturing_img), Write(producers_text), run_time=0.75)
         self.wait(2.5)
         self.play(Write(prod_related[0][0:12]), run_time=0.75)
@@ -525,11 +527,11 @@ class eoq_01_05(MovingCameraScene):
         self.play(Write(prod_related[0][12:]), run_time=0.75)
         self.wait(1.25)
         self.play(FadeOut(manufacturing_img), FadeOut(prod_totalunit),
-                  material_math[0][0].animate.set_color(COLOR_1),
+                  material_eq[0][0].animate.set_color(COLOR_1),
                   run_time=1)
         self.wait(2.85)
         
-        D_surr = SurroundingRectangle(material_math[0][1],
+        D_surr = SurroundingRectangle(material_eq[0][1],
                                       color=COLOR_3, buff=0.05, stroke_width=stroke_width)
         self.play(Create(D_surr), run_time=1)
         self.wait(2.5)
@@ -538,21 +540,17 @@ class eoq_01_05(MovingCameraScene):
         self.wait(2)
         self.play(FadeOut(D_surr), FadeOut(known), run_time=1)
         self.wait(1.75)
-        self.play(FadeOut(material_txt), material_math.animate.move_to(material_txt.get_center()))
+        self.play(FadeOut(material_txt), FadeIn(equals), ReplacementTransform(material_eq, material_math))
         self.wait(1.5)
-
-        self.play(Write(setup_txt))
-
-material_math.move_to(material_txt.get_center())
-setup_math = MathTex(r"c_t\frac{D}{Q}")
-holding_math = MathTex(r"cD")
-shortage_math = MathTex(r"cD")
 
 class eoq_01_06(MovingCameraScene):
 
     def construct(self):
+        setup_eq = MathTex(r"c_t\frac{D}{Q}")
         
-        self.add(total_txt, material_math)
+        self.add(total_cost_txt, equals, material_math)
+        self.play(FadeIn(plus1), run_time=.5)
+        self.wait(0.5)
 
         # Lots
         sku = RoundedRectangle(corner_radius=0.1, width=1, height=1, color=COLOR_1, stroke_color=COLOR_2,
@@ -584,7 +582,7 @@ class eoq_01_06(MovingCameraScene):
         arr1 = Arrow(setup_txt.get_corner(DL), fixed_txt_1.get_corner(UR),
                      max_tip_length_to_length_ratio=0.05, color=COLOR_3, stroke_width=stroke_width)
         arr2 = Arrow(setup_txt.get_edge_center(DOWN), fixed_txt_2.get_edge_center(UP),
-                     max_tip_length_to_length_ratio=0.2, color=COLOR_3, stroke_width=stroke_width)
+                     max_tip_length_to_length_ratio=0.3, color=COLOR_3, stroke_width=stroke_width)
         arr3 = Arrow(setup_txt.get_corner(DR), fixed_txt_3.get_corner(UL),
                      max_tip_length_to_length_ratio=0.05, color=COLOR_3, stroke_width=stroke_width)
         
@@ -625,11 +623,11 @@ class eoq_01_06(MovingCameraScene):
         year_sku = VGroup(*[sku.copy() for _ in range(225)]).arrange_in_grid(rows=9, buff=0.150)
         year_sku.next_to(total_setup_txt, DOWN*2)
         self.play(GrowFromCenter(year_sku), run_time=1)
-        self.wait(1)
+        self.wait(0.5)
 
-        year_surr = SurroundingRectangle(year_sku, color=COLOR_3, buff=0.15, corner_radius=0.1, stroke_width=2.5)
+        year_surr = SurroundingRectangle(year_sku, color=COLOR_3, buff=0.15, corner_radius=0.1, stroke_width=3)
         year_txt = Tex("$D$ units", color=COLOR_3).next_to(year_surr, DOWN*0.5)
-        self.play(Create(year_surr), Write(year_txt), run_time=1)
+        self.play(Create(year_surr), Write(year_txt), rate_func=linear, run_time=1.5)
         
         self.wait(1)
         self.play(FadeOut(year_surr), FadeOut(year_txt), run_time=0.5)
@@ -637,25 +635,31 @@ class eoq_01_06(MovingCameraScene):
         lot_sku = VGroup(*[sku.copy() for _ in range(45)]).arrange_in_grid(rows=9, buff=0.150)
         pos = year_sku.get_edge_center(LEFT)
         lot_sku.next_to(pos, RIGHT*0, buff=0).align_to(pos, LEFT)
-        lot_surr = SurroundingRectangle(lot_sku, color=COLOR_3, buff=0.075, corner_radius=0.1, stroke_width=1.70)
+        lot_surr = SurroundingRectangle(lot_sku, color=COLOR_3, buff=0.075, corner_radius=0.1, stroke_width=2.5)
         other_surr = VGroup(*[lot_surr.copy() for _ in range(4)]).arrange(RIGHT, buff=0)
         other_surr.next_to(lot_surr, RIGHT, buff=0)
 
         lot_txt = Tex("$Q$ units", color=COLOR_3).next_to(lot_surr, LEFT*0.5)
-        self.play(Create(lot_surr), Write(lot_txt), run_time=1)
+        self.play(Create(lot_surr), Write(lot_txt), run_time=1, rate_func=linear)
 
         self.wait(1.5)
-        self.play(FadeIn(other_surr), run_time=1)
+        self.play(FadeOut(lot_txt), Create(other_surr), run_time=2)
 
-        self.wait(3)
+        self.wait(2)
 
-        equals = MathTex(r"=").next_to(total_setup_txt, RIGHT*0.5).scale(0.5)
-        setup_math.next_to(equals, RIGHT*0.15).scale(0.5)
-        self.play(Write(setup_math[0][2:]), run_time=0.75)
+        equals_ = MathTex(r"=").next_to(total_setup_txt, RIGHT*0.5).scale(0.5)
+        setup_eq.next_to(equals_, RIGHT*0.15).scale(0.5)
+        self.play(Write(setup_eq[0][2:]), run_time=0.75)
         self.wait(3)
-        self.play(Write(setup_math[0][0:2]), run_time=0.75)
+        self.play(Write(setup_eq[0][0:2]), run_time=0.75)
         self.wait(1)
-        self.play(Write(equals), run_time=0.75)
-        self.wait(3)
+        self.play(Write(equals_), run_time=0.75)
+        self.wait(2.5)
+
+        self.play(*[FadeOut(mob) for mob in [lot_surr, other_surr, year_sku, total_setup_txt, equals_]],
+                  setup_eq.animate.move_to(total_setup_txt.get_center() + [0,0.5,0])
+                  )
+        self.play(setup_eq[0][0:2].animate.set_color(COLOR_3))
+        self.wait(2)
 
         

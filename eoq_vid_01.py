@@ -413,14 +413,11 @@ total_cost_txt = Tex(r"Total Cost $=$ Material Cost $+$ Setup Cost $+$ Holding C
 total_cost_txt.shift(UP*3)
 total_txt = total_cost_txt[0][0:10]
 material_txt = total_cost_txt[0][10:22]
-setup_txt = total_cost_txt[0][22:32]
+#setup_txt = total_cost_txt[0][22:32]
 holding_txt = total_cost_txt[0][32:44]
 shortage_txt = total_cost_txt[0][44:]
 
 material_math = MathTex(r"cD").shift(UP*2)
-setup_math = MathTex(r"cD").shift(UP*2)
-holding_math = MathTex(r"cD").shift(UP*2)
-shortage_math = MathTex(r"cD").shift(UP*2)
 
 class eoq_01_05(MovingCameraScene):
 
@@ -547,10 +544,118 @@ class eoq_01_05(MovingCameraScene):
         self.play(Write(setup_txt))
 
 material_math.move_to(material_txt.get_center())
+setup_math = MathTex(r"c_t\frac{D}{Q}")
+holding_math = MathTex(r"cD")
+shortage_math = MathTex(r"cD")
 
 class eoq_01_06(MovingCameraScene):
 
     def construct(self):
         
-        self.add(total_txt, material_math, setup_txt)
-        self.wait(2)
+        self.add(total_txt, material_math)
+
+        # Lots
+        sku = RoundedRectangle(corner_radius=0.1, width=1, height=1, color=COLOR_1, stroke_color=COLOR_2,
+                               stroke_width=2, fill_opacity=1).scale(0.25)
+        lot1 = VGroup(*[sku.copy() for _ in range(25)]).arrange_in_grid(rows=5, buff=0.1)
+        lot2 = VGroup(*[sku.copy() for _ in range(25)]).arrange_in_grid(rows=5, buff=0.1)
+        lot3 = VGroup(*[sku.copy() for _ in range(25)]).arrange_in_grid(rows=5, buff=0.1)
+        VGroup(lot1, lot2, lot3).arrange(RIGHT, buff=2).shift(DOWN*0.65)
+        
+        setup_txt = Tex("Setup Cost").next_to(lot2, UP*5)
+        self.play(Write(setup_txt), run_time=0.75)
+        self.wait(1)
+
+        ordering_txt = Tex("Ordering Cost").next_to(setup_txt, DOWN*3)
+        ordering_arrow = Arrow(setup_txt.get_center(),
+                               ordering_txt.get_center(),
+                               max_tip_length_to_length_ratio=0.15,
+                               color=COLOR_3,
+                               stroke_width=stroke_width)
+        self.play(GrowArrow(ordering_arrow), Write(ordering_txt), run_time=0.75)
+        self.wait(0.75)
+        self.play(FadeOut(ordering_arrow), FadeOut(ordering_txt), run_time=0.75)
+        self.wait(0.25)
+
+        fixed_txt_1 = Tex("Fixed Cost").next_to(lot1, UP*0.75)
+        fixed_txt_2 = Tex("Fixed Cost").next_to(lot2, UP*0.75)
+        fixed_txt_3 = Tex("Fixed Cost").next_to(lot3, UP*0.75)
+
+        arr1 = Arrow(setup_txt.get_corner(DL), fixed_txt_1.get_corner(UR),
+                     max_tip_length_to_length_ratio=0.05, color=COLOR_3, stroke_width=stroke_width)
+        arr2 = Arrow(setup_txt.get_edge_center(DOWN), fixed_txt_2.get_edge_center(UP),
+                     max_tip_length_to_length_ratio=0.2, color=COLOR_3, stroke_width=stroke_width)
+        arr3 = Arrow(setup_txt.get_corner(DR), fixed_txt_3.get_corner(UL),
+                     max_tip_length_to_length_ratio=0.05, color=COLOR_3, stroke_width=stroke_width)
+        
+        self.play(GrowFromCenter(lot1), GrowFromCenter(lot2), GrowFromCenter(lot3),
+                  GrowFromPoint(fixed_txt_1, lot1.get_center()),
+                  GrowFromPoint(fixed_txt_2, lot2.get_center()),
+                  GrowFromPoint(fixed_txt_3, lot3.get_center()),
+                  GrowArrow(arr1), GrowArrow(arr2), GrowArrow(arr3), run_time=1)
+        self.wait(4.5)
+        self.play(*[FadeOut(mob) for mob in [lot2,
+                                             fixed_txt_1, fixed_txt_2, fixed_txt_3,
+                                             arr1, arr2, arr3]], run_time=1)
+        self.wait(1)
+
+        lot_big = VGroup(*[sku.copy() for _ in range(81)]).arrange_in_grid(rows=9, buff=0.1)
+        lot_big.move_to(lot1.get_center())
+
+        same_txt = Tex(r"Same fixed cost").move_to(midpoint(lot_big.get_edge_center(RIGHT),
+                                                            lot3.get_edge_center(LEFT)
+                                                            ))
+        
+        arrL = Arrow(same_txt.get_edge_center(LEFT), lot_big.get_edge_center(RIGHT),
+                     max_tip_length_to_length_ratio=0.075, color=COLOR_3, stroke_width=stroke_width)
+        arrR = Arrow(same_txt.get_edge_center(RIGHT), lot3.get_edge_center(LEFT),
+                     max_tip_length_to_length_ratio=0.075, color=COLOR_3, stroke_width=stroke_width)
+
+        self.play(FadeIn(lot_big), Write(same_txt),
+                  GrowArrow(arrL), GrowArrow(arrR), run_time=1)
+
+        self.wait(2.5)
+        self.play(*[FadeOut(mob) for mob in [lot_big, lot1, lot3, arrL, arrR, same_txt]], run_time=1)
+
+        total_setup_txt = Tex("Total Setup Cost").next_to(lot2, UP*5)
+        self.play(ReplacementTransform(setup_txt, total_setup_txt), run_time=1)
+
+        self.wait(3)
+
+        year_sku = VGroup(*[sku.copy() for _ in range(225)]).arrange_in_grid(rows=9, buff=0.150)
+        year_sku.next_to(total_setup_txt, DOWN*2)
+        self.play(GrowFromCenter(year_sku), run_time=1)
+        self.wait(1)
+
+        year_surr = SurroundingRectangle(year_sku, color=COLOR_3, buff=0.15, corner_radius=0.1, stroke_width=2.5)
+        year_txt = Tex("$D$ units", color=COLOR_3).next_to(year_surr, DOWN*0.5)
+        self.play(Create(year_surr), Write(year_txt), run_time=1)
+        
+        self.wait(1)
+        self.play(FadeOut(year_surr), FadeOut(year_txt), run_time=0.5)
+
+        lot_sku = VGroup(*[sku.copy() for _ in range(45)]).arrange_in_grid(rows=9, buff=0.150)
+        pos = year_sku.get_edge_center(LEFT)
+        lot_sku.next_to(pos, RIGHT*0, buff=0).align_to(pos, LEFT)
+        lot_surr = SurroundingRectangle(lot_sku, color=COLOR_3, buff=0.075, corner_radius=0.1, stroke_width=1.70)
+        other_surr = VGroup(*[lot_surr.copy() for _ in range(4)]).arrange(RIGHT, buff=0)
+        other_surr.next_to(lot_surr, RIGHT, buff=0)
+
+        lot_txt = Tex("$Q$ units", color=COLOR_3).next_to(lot_surr, LEFT*0.5)
+        self.play(Create(lot_surr), Write(lot_txt), run_time=1)
+
+        self.wait(1.5)
+        self.play(FadeIn(other_surr), run_time=1)
+
+        self.wait(3)
+
+        equals = MathTex(r"=").next_to(total_setup_txt, RIGHT*0.5).scale(0.5)
+        setup_math.next_to(equals, RIGHT*0.15).scale(0.5)
+        self.play(Write(setup_math[0][2:]), run_time=0.75)
+        self.wait(3)
+        self.play(Write(setup_math[0][0:2]), run_time=0.75)
+        self.wait(1)
+        self.play(Write(equals), run_time=0.75)
+        self.wait(3)
+
+        

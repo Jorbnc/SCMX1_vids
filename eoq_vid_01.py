@@ -36,34 +36,35 @@ class eoq_01_01(MovingCameraScene):
     def construct(self):
 
         # EOQ: INTRODUCTION + FORMULA
-        eoq_text = Tex(r"Economic Order Quantity")
+        eoq_text = Tex(r"Economic Order Quantity").scale(1.5)
         eoq_math = MathTex(r"EOQ")
         self.play(Write(eoq_text), run_time=1)
         self.play(ReplacementTransform(eoq_text, eoq_math), run_time=1)
         self.wait(1)
 
-        op_scm_text = Tex(r"Operations Management\\Supply Chain Management")
+        op_scm_text = Tex(r"Operations Management\\Supply Chain Management").scale(1.5)
         self.play(eoq_math.animate.move_to([0,1.5,0]), run_time=0.5, rate_func=smooth)
         self.wait(1)
         self.play(Write(op_scm_text), run_time=1.5)
-        self.play(FadeOut(op_scm_text), run_time=0.5)
+        self.play(FadeOut(op_scm_text), run_time=0.7)
         self.play(ReplacementTransform(eoq_math, formula), run_time=1)
         self.play(Create(formula_surr), run_time=1)
         self.wait(1)
 
         # FIRST AXIS AND SAWTOOTH: CREATE
-        self.play(Create(grid), Write(x_label), Write(y_label), run_time=1.75)
         q_dot = Dot(point=grid.c2p(0, 400, 0), radius=0.05, color=COLOR_3)
-        self.play(ReplacementTransform(formula_and_surr, q_dot), run_time=1, rate_func=smooth)
-        self.play(Create(sawtooth, run_time=1.25, rate_func=linear))
+        self.play(FadeIn(grid), FadeIn(x_label), FadeIn(y_label),
+                  ReplacementTransform(formula_and_surr, q_dot),
+                  run_time=2, rate_func=smooth)
+        self.play(Create(sawtooth, run_time=1.75, rate_func=linear))
 
         # SECOND AXIS: DEFINE + CREATE
         grid_2= Axes(x_range=[0, 1600, 200], y_range=[0, 3000, 500],
                      x_length=11, y_length=3.5,
                      axis_config={"color": COLOR_1,"font_size": 24}, tips=False)
-        y_label_2 = grid.get_y_axis_label(Tex("Cost").scale(0.65).rotate(90 * DEGREES),
+        y_label_2 = grid.get_y_axis_label(Tex("Cost").scale(1.1).rotate(90 * DEGREES),
                                         edge=LEFT, direction=LEFT, buff=0.3)
-        x_label_2 = grid.get_x_axis_label(Tex("Order Quantity").scale(0.65),
+        x_label_2 = grid.get_x_axis_label(Tex("Order Quantity").scale(1.1),
                                         edge=DOWN, direction=DOWN, buff=0.3)
         q_dot_2 = Dot(point=grid_2.c2p(400, 0, 0), radius=0.05, color=COLOR_3)
         self.play(ReplacementTransform(grid, grid_2),
@@ -111,7 +112,7 @@ class eoq_01_01(MovingCameraScene):
 class eoq_01_02(MovingCameraScene):
 
     def construct(self):
-
+        txt_scale = 1.5
         formula_and_surr.move_to([0, 2.25, 0])
         eoq_model = VGroup(grid, sawtooth, x_label, y_label).move_to([0, -0.75, 0])
         self.play(FadeIn(formula_and_surr), FadeIn(eoq_model), run_time=1.5)
@@ -133,7 +134,7 @@ class eoq_01_02(MovingCameraScene):
         for x in epq_values[1::2]: # Starting at index 1, every 2 indices
             epq_vlines += ax1.get_vertical_line(ax1.c2p(x, 350),
                                                 line_config={"dashed_ratio": 0.8}, color=COLOR_2)
-        epq_text = Tex(r"Economic Production Quantity").scale(0.95).next_to(ax1.c2p(5, 420), RIGHT)
+        epq_text = Tex(r"Finite Replenishment").scale(1.8).next_to(ax1.c2p(5, 420), RIGHT)
         epq_model = VGroup(ax1, epq, epq_vlines, epq_text)
 
         # ============= CONTINUOUS REVIEW
@@ -171,7 +172,7 @@ class eoq_01_02(MovingCameraScene):
                                             line_color = COLOR_2, stroke_width=2, add_vertex_dots=False)
         continuous_ip = DashedVMobject(continuous_ip["line_graph"], num_dashes=250)
         s_limit = ax2.get_horizontal_line(ax2.c2p(365, s), line_config={"dashed_ratio": 0.9}, stroke_width=3, color=COLOR_4)
-        continuous_text = Tex(r"Continuous Review").scale(0.95).next_to(ax2.c2p(5, 600), RIGHT)
+        continuous_text = Tex(r"Continuous Review").scale(1.8).next_to(ax2.c2p(5, 600), RIGHT)
         continuous_model = VGroup(ax2, continuous_onhand, s_limit, continuous_ip, continuous_text)
         
         # ============= PERIODIC REVIEW
@@ -210,7 +211,7 @@ class eoq_01_02(MovingCameraScene):
                                             line_color = COLOR_2, stroke_width=2, add_vertex_dots=False)
         periodic_ip = DashedVMobject(periodic_ip["line_graph"], num_dashes=250)
         S_limit = ax3.get_horizontal_line(ax3.c2p(365, S), line_config={"dashed_ratio": 0.9}, stroke_width=3, color=COLOR_4)
-        periodic_text = Tex(r"Periodic Review").scale(0.95).next_to(ax3.c2p(5, 620), RIGHT)
+        periodic_text = Tex(r"Periodic Review").scale(1.8).next_to(ax3.c2p(5, 620), RIGHT)
         
         periodic_model = VGroup(ax3, periodic_plot, S_limit, periodic_ip, periodic_text)
 
@@ -221,10 +222,11 @@ class eoq_01_02(MovingCameraScene):
         # All models and zoom out
         VGroup(epq_model, continuous_model, periodic_model).arrange(DOWN, buff=0.75, center=False, aligned_edge=LEFT).move_to([15.75, 0, 0])
         
-        final_arrow = Arrow(start=LEFT, end=RIGHT, color=COLOR_3).next_to(formula_and_surr, RIGHT*2)
-        core_concept_text = Tex(r"Core Concept").next_to(final_arrow, RIGHT*2)
+        final_arrow = Arrow(start=LEFT, end=RIGHT, color=COLOR_3, stroke_width=4.5,
+                            max_tip_length_to_length_ratio=0.15,).next_to(formula_and_surr, RIGHT*2)
+        core_concept_text = Tex(r"Core Concept").scale(txt_scale).next_to(final_arrow, RIGHT*2)
         next_text = Tex(r"Fundamental\\Strategy") # Tex(r"Fundamental\\Strategy", tex_environment="flushleft") # to align left
-        next_text.next_to(final_arrow, RIGHT*2)
+        next_text.scale(txt_scale).next_to(final_arrow, RIGHT*2)
 
         self.play(self.camera.frame.animate.scale(1.15).move_to([1.25, 0, 0]),
                   GrowArrow(final_arrow), Write(core_concept_text), run_time=1)
@@ -259,19 +261,19 @@ class eoq_01_03(MovingCameraScene):
         text_1913 = MathTex(r"1913", color=COLOR_3)
         dot_1913 = Dot(timeline.n2p(1913), 0.05, color=COLOR_3)
         self.play(GrowFromEdge(timeline, LEFT), run_time=1)
-        self.play(Write(text_1913), run_time=0.5)
+        self.play(Write(text_1913), run_time=0.75)
         self.play(ReplacementTransform(text_1913, dot_1913), run_time=0.75)
         
-        harris_pic = FramedImage("img/harris2.jpg", height=4.5)
+        harris_pic = FramedImage("img/0_harris.jpg", height=4.5)
         harris_name = Tex("Ford Whitman Harris", font_size=25).next_to(harris_pic, UP)
         harris = Group(harris_pic, harris_name)
         self.play(FadeIn(harris_pic), Write(harris_name), run_time=1)
-        self.wait(5)
+        self.wait(4.75)
 
-        paper1 = FramedImage("img/paper1.png", height=4.5).move_to([2,0,0])
+        paper1 = FramedImage("img/0_paper1.png", height=4.5).move_to([2.005,0,0])
         source = Tex(r"Images: www.academia.edu", font_size=17).to_edge(DOWN + RIGHT).shift(UP)
         self.play(harris.animate.shift(LEFT*2), FadeIn(paper1), Write(source), run_time=1)
-        factory = Tex(r"\textit{Factory,\\The Magazine of Management}", font_size=15).next_to(paper1, UP)
+        factory = Tex(r"\textit{Factory,\\The Magazine of Management}", font_size=20).next_to(paper1, UP)
         self.wait(2)
         self.play(Write(factory), run_time=1)
         self.wait(1)
@@ -279,7 +281,7 @@ class eoq_01_03(MovingCameraScene):
         self.play(FadeOut(harris), FadeOut(paper1), FadeOut(factory), FadeOut(source), run_time=0.75)
         self.wait(1)
 
-        paper2 = FramedImage("img/paper2.png", height=4.5)
+        paper2 = FramedImage("img/0_paper2.png", height=4.5)
         self.play(FadeIn(paper2), Write(source), run_time=1)
         self.wait(3.5)
 
@@ -456,7 +458,7 @@ class eoq_01_05(MovingCameraScene):
         self.wait(2)
 
         # FOR MERCHANTS 
-        merchants_img = FramedImage("img/purchases.png", width=4)[0]
+        merchants_img = FramedImage("img/1_retail.png", width=4)
         purchase_prep_text = Tex(r"Purchase price + Sale preparation costs")
         pack_n_label_arrow = Arrow(purchase_prep_text.get_edge_center(RIGHT),
                                    purchase_prep_text.get_edge_center(RIGHT) + [1.25,0,0],
@@ -506,8 +508,10 @@ class eoq_01_05(MovingCameraScene):
                   )
 
         # FOR PRODUCERS
-        manufacturing_img = FramedImage("img/manufacturing.png", width=4.3)[0]
+        manufacturing_img = FramedImage("img/1_manuf2.png", width=4).move_to(merchants_img.get_center())
         producers_text = Tex(r"\textbf{Unit Cost for Producers:}")
+        pos = merchants_text.get_edge_center(LEFT)
+        producers_text.move_to(pos).align_to(pos, LEFT)
         total_unit_prodcost = Tex(r"Total Unitary Production Cost:")
         prod_related = Tex("Raw Materials $+$ Direct Labor $+$ Overhead")
         prod_totalunit = VGroup(producers_text,
@@ -516,8 +520,8 @@ class eoq_01_05(MovingCameraScene):
                                                       buff=0.35,
                                                       center=False,
                                                       aligned_edge=LEFT)
-        Group(manufacturing_img,
-              prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_eq, DOWN*1.5)
+        # Group(manufacturing_img,
+        #       prod_totalunit).arrange(RIGHT, buff=0.35,).next_to(material_eq, DOWN*1.5)
         self.play(FadeIn(manufacturing_img), Write(producers_text), run_time=0.75)
         self.wait(2.5)
         self.play(Write(prod_related[0][0:12]), run_time=0.75)
@@ -660,6 +664,132 @@ class eoq_01_06(MovingCameraScene):
                   setup_eq.animate.move_to(total_setup_txt.get_center() + [0,0.5,0])
                   )
         self.play(setup_eq[0][0:2].animate.set_color(COLOR_3))
+        self.wait(4)
+
+        img_office = FramedImage("img/2_office.png", width=4)#.to_edge(DOWN + LEFT).shift(UP*0.5 + RIGHT)
+        img_routes = FramedImage("img/2_routes.png", width=4)#.to_edge(DOWN + LEFT).shift(UP*0.5 + RIGHT)
+        img_unload = FramedImage("img/2_unloading.png", width=4)#.to_edge(DOWN + LEFT).shift(UP*0.5 + RIGHT)
+
+        g_fixed = Group(img_office, img_routes, img_unload).arrange(RIGHT, buff=0.5).to_edge(DOWN).shift(UP*0.5)
+
+        self.play(FadeIn(img_office), run_time=1.25)
+        self.wait(8.75)
+        self.play(FadeIn(img_routes), run_time=1.25)
+        self.wait(5.75)
+        self.play(FadeIn(img_unload), run_time=1.25)
+        self.wait(11)
+        self.play(FadeOut(g_fixed), run_time=1)
+
+        self.wait(2)
+        img_few  = FramedImage("img/3_fewitems.png", width=4)
+        img_many  = FramedImage("img/3_manyitems.png", width=4)
+        Group(img_many, img_few).arrange(RIGHT, buff=0.5).to_edge(DOWN).shift(UP*0.5)
+        self.play(FadeIn(img_many), FadeIn(img_few), run_time=1)
+        self.wait(8.5)
+        self.play(FadeOut(img_many), FadeOut(img_few), run_time=1)
         self.wait(2)
 
+        fixvar_setup_eq = MathTex(r"(c_{t_f} + c_{t_v}Q)\frac{D}{Q}", font_size=30)
+        fixvar_arr = Arrow(setup_eq[0][0].get_center(),
+                           (setup_eq[0][0].get_x(), fixvar_setup_eq.get_y() + 0.25, 0),
+                           max_tip_length_to_length_ratio=0.05, color=COLOR_3, stroke_width=stroke_width)
+        fixvar_setup_eq[0][0:10].set_color(COLOR_3)
+        #self.play(GrowArrow(fixvar_arr), run_time=1)
+        #self.play(Write(fixvar_setup_eq), FadeOut(fixvar_arr), run_time=1)
+        self.play(TransformByGlyphMap(setup_eq, fixvar_setup_eq,
+                                      ([0,1], [0,1,2,3,4]),
+                                      ([0,1], [5,6,7,8,9]),
+                                      ([2,3,4], [10,11,12]), from_copy=True,
+                                      ), run_time=2)
+        self.wait(3.5)
+
+        fixvar_setup_eq_2 = MathTex(r"c_{t_f}\frac{D}{Q} + c_{t_v}Q\frac{D}{Q}", font_size=30)
+        fixvar_setup_eq_3 = MathTex(r"c_{t_f}\frac{D}{Q} + c_{t_v}D", font_size=30)
+
+        self.play(TransformByGlyphMap(fixvar_setup_eq, fixvar_setup_eq_2,
+                                      ([1,2,3], [0,1,2]),
+                                      ([10,11,12], [3,4,5]),
+                                      ([10,11,12], [11,12,13]),
+                                      ([4], [6]),
+                                      ([5,6,7], [7,8,9]),
+                                      ([8], [10]),
+                                      ([0,9], [])
+                                      ), run_time=2)
         
+        Q_cancel_1 = Line(fixvar_setup_eq_2[0][10].get_corner(UR), fixvar_setup_eq_2[0][10].get_corner(DL),
+                          color=COLOR_3, stroke_width=stroke_width)
+        Q_cancel_2 = Line(fixvar_setup_eq_2[0][13].get_corner(UR), fixvar_setup_eq_2[0][13].get_corner(DL),
+                          color=COLOR_3, stroke_width=stroke_width)
+        self.play(Create(Q_cancel_1), Create(Q_cancel_2), run_time=0.75)
+        self.play(FadeOut(Q_cancel_1), FadeOut(Q_cancel_2),
+                  TransformByGlyphMap(fixvar_setup_eq_2, fixvar_setup_eq_3,
+                                      ([11], [10]),
+                                      ([10,12,13], [])
+                                      ), run_time=2)
+        self.wait(3.5)
+        arr_fixvar = Arrow(fixvar_setup_eq_3[0][7:].get_edge_center(UP),
+                           material_math.get_corner(DR),
+                           max_tip_length_to_length_ratio=0.025, color=COLOR_3, stroke_width=stroke_width)
+        
+        self.play(GrowArrow(arr_fixvar), run_time=1)
+
+        self.wait(5)
+
+class test(Scene):
+
+    def construct(self):
+        foo = MathTex(r"A + B", font_size=80)
+        foo2 = MathTex(r"a + c + d", font_size=80)
+        setup_eq = MathTex(r"c_{t}\frac{D}{Q}", font_size=80)
+        fixvar_setup_eq = MathTex(r"(c_{t_f} + c_{t_v}Q)\frac{D}{Q}", font_size=80)
+        fixvar_setup_eq_2 = MathTex(r"c_{t_f}\frac{D}{Q} + c_{t_v}Q\frac{D}{Q}", font_size=80)
+        fixvar_setup_eq_3 = MathTex(r"c_{t_f}\frac{D}{Q} + c_{t_v}D", font_size=80)
+        self.add(setup_eq)
+        self.play(TransformByGlyphMap(setup_eq, fixvar_setup_eq,
+                                      ([0,1], [0,1]),
+                                      ([2], [2,3]),
+                                      ([], []),
+                                      
+                                      ), run_time=2)
+        
+# class eoq_01_07(MovingCameraScene):
+
+#     def construct(self):
+
+        
+#         self.wait(3)
+
+class MyScene(Scene):
+    def construct(self):
+        members = inspect.getmembers(type(self), predicate=inspect.isfunction)
+        members = [ m for m in members if m[0].startswith("subscene") ]
+        members = sorted(members, key=lambda x: inspect.getsourcelines(x[1])[1])
+
+        for name, method in members:
+            skip = False
+            s = inspect.signature(method)
+            if 'skip' in s.parameters:
+                skip = s.parameters['skip'].default
+            self.next_section(name, skip_animations=skip)
+            print("Skipping" if skip else "Running", name)
+            method(self)
+            self.wait()
+
+# Then you inherit from MyScene and instead of writing construct() you write
+# separate methods. All those which start with "subscene" will be run, in the
+# order they appear in the source. Those that declare `skip=True` do not produce
+# animations but are run nevertheless, because they can create objects that
+# are required later. Also manim renders the last frame of the skipped ones
+# to allow the animation to "continue" after in the next one
+class Test(MyScene):
+    def subscene1(self):
+        self.c = Circle()
+        self.play(Create(self.c))
+
+    def subscene2(self, skip=True):
+        self.text = Text("This is a test")
+        self.text.next_to(self.c, DOWN)
+        self.play(Write(self.text))
+
+    def subscene3(self):
+        self.play(self.text.animate.next_to(self.c, UP))

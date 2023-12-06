@@ -84,28 +84,88 @@ For producers, the unit cost extends beyond the mere calculation of raw material
 
 Notice that there is a crucial assumption here: demand is represented by a single value, so it's said to be known and constant throughout the year. We will explore the ramifications of this assumption later.
 
-**Total Setup Cost or Ordering Cost = $c_t\frac{D}{Q}$**
+**Setup Cost**
 
-Foo
+Also referred to as Ordering Cost. It is a fixed cost incurred with each batch production or lot purchase. Its defining characteristic in modeling is that it remains constant, irrespective of the lot size Q. Accordingly, the total setup cost is solely based on the number of replenishments throughout the year.
+
+If the demand for the year is D and we order lots of size Q, then we will have D over Q orders across the year.
+Once we multiply this number by the setup cost factor, we get the total setup cost.
+
+Total Setup Cost $= c_t\frac{D}{Q}$
+
+But what are the fixed costs of ordering inventory?
+
+Consider the resources invested in a purchase process: the buyer's time, communication expenses, the use of procurement software. There may also be potential paperwork and invoicing.
+
+The transportation of the items might require fixed delivery rates, independent of the lot size.
+
+Later, upon arrival, inventory incurs costs before it even hits the shelves. We're talking about material handling, preparation for storage, inspection, and the task of updating inventory records.
+
+In practical situations, however, both receiving and transportation costs are influenced by the size of the lot. For instance, handling and transporting large quantities requires more labor than smaller lots. This implies that the ordering cost may have both a fixed and a variable element that escalates with Q.
+
+$c_t = c_{t_v}*Q + c_{t_f}$
+
+Notice that the Q in the variable component would be cancelled out. This is why per-unit costs like transportation and material handling were already included in the unit cost. However, this approach assumes that the variable factor does not benefit from economies of scale and remains constant for any lot size.
+
+Now, in the context of manufacturing, fixed setup costs can also be multifaceted. For instance, the labor required for machine setup is a critical factor in the early stages of production runs. Reduced efficiency and quality often characterize the learning period for new production setups, representing another significant cost component. Furthermore, when a fully operational factory pauses the production of revenue-generating items for a new setup, substantial opportunity costs arise, highlighting the financial weight of these decisions.
 
 **Holding Cost = $c_{e}\frac{Q}{2}$**
 
-Holding Costs, which include expenses for storing and managing inventory throughout the unit time.
+Holding Cost. Also known as carrying cost. Unlike the setup cost, the holding cost is determined based on the quantity or level of inventory ordered or produced in each lot, leading to different holding costs for varying lot sizes.
 
-Check SCMx1 PDF
+This difference is due to the cost concepts involved here. 
+
+For instance: The money tied up in inventory or cost of capital. Capital is allocated to either purchase or produce inventory units, so less inventory means more available capital for alternative investments, each with their respective rates of return. Given that capital can be sourced from either equity or debt, the Weighted Average Cost of Capital is often used here, as it’s a blended measure for both sources of inventory financing.
+
+Costs of Storage. Warehouse space often represents a significant expenditure, especially in prime locations. Handling and organizing within the storage space adds to the costs. Some inventory items might also necessitate special storage conditions, such as refrigeration or specific humidity levels, leading to additional expenses.
+
+Sometimes, concepts such as perishability, shrinkage, insurance, or even taxation expenses are also included as part of the holding cost.
+
+Given the complexity of these factors, the EOQ model attempts to amalgamate all these cost concepts into a single value, C sub E, which can be expressed, for instance, as a percentage of the unit value, C. This percentage is known as the 'holding rate.' Accordingly, the total holding cost is proportional to C sub E multiplied by the amount of inventory held during the year. So how much inventory is held during the year?
+
+Recall that previously we stated that demand in the EOQ model is assumed to be constant throughout the year. This can also be interpreted as a steady rate of consumption or usage per unit time. Given this steady rate of consumption, when ordering or producing inventory in lots of size Q, the inventory level will naturally oscillate between the maximum of Q and a minimum of zero over the course of the year. Which means that items are not necessarily held for a whole year. So, to streamline calculations, the average inventory level over the year is typically used, which is taken as Q over 2.
+
+**Closer look at the EOQ assumptions**
+
+We are now closer to deriving the square root formula for the EOQ. But first, let's take a closer look at the EOQ model's assumptions. We have already established that demand should be known and constant, rather than random and variable; continuous, not occurring in discrete events. It should be accompanied by instantaneous or nearly instantaneous replenishment, not finite and variable. Items should be unaffected by quantity-based discounts and not specifically consider item perishability. The planning horizon is assumed to be infinite, as opposed to finite. This means that, despite using annual costs, the model assumes a perpetual policy, with no defined time limit. The review time for inventory should be continuous, as opposed to periodic. This implies that we can check the inventory level at any point in time. What kind of inventory tracking technology do you think this requires? There should not be explicit restrictions on order size or warehouse capacity, nor should planned backorders be allowed.
+
+Note that we are not considering the potential costs of stockouts or shortages, as the model theoretically mitigates this risk. By operating under the premise of constant and known demand, ensuring timely replenishments, and disallowing backorders, we effectively negate the possibility of sudden stockouts.
+
+It’s important to realize that the EOQ model is most effective when these conditions are met, but such scenarios are rare in real-world applications. Fortunately, the model can be modified to accommodate deviations from these assumptions, or we can leverage its insights to develop more advanced models better suited to those complexities.
 
 ## Total Cost Expression 
-Introducing variable and fixed components in the ordering cost results a similar expression:
 
-$TC = cD + (c_{t_v}Q + c_{t_{f}})\frac{D}{Q} + c_e\frac{Q}{2} = (c + c_{t_v})D + c_t\frac{D}{Q} + c_e\frac{Q}{2}$
+So let's continue with the Total Inventory Cost expression.
 
-that also includes variable transportation and material handling as "part of the $c$"
+$TC = cD + c_t\frac{D}{Q} + c_e\frac{Q}{2}$
 
-**Shortages:**
+If we consider the individual costs and the demand as known parameters, and the order quantity Q as a variable, then the total cost of inventory is a function of Q.
 
-$TC = cD + c_e\frac{Q}{2} + c_t\frac{D}{Q} + c_sE[Units\;Short]$
+$TC(Q) = cD + c_t\frac{D}{Q} + c_e\frac{Q}{2}$
 
-but demand is deterministic, so we can get rid of the fourth component
+Note that the material cost remains unaffected by changes in Q, and can be seen as a fixed cost in this regard. So, for the purpose of our analysis, we can exclude the material cost and focus solely on the costs that are relevant and influenced by Q. This leads us to the formulation of the Total Relevant Cost expression.
+
+$TRC(Q) = c_t\frac{D}{Q} + c_e\frac{Q}{2}$
+
+Let's plot the function to observe its behavior. As Q increases, the ordering or setup cost decreases, which is logical since larger lots result in fewer orders. Conversely, the holding cost increases with larger Q, leading to a higher average cost for the year, and therefore more capital and storage costs, as previously discussed.
+
+We can visually observe that the total relevant cost appears to be the least when both cost components are roughly equal. To precisely understand this aspect and confirm our visual intuition, a basic understanding of calculus, specifically derivatives, is necessary. Although an in-depth explanation of derivatives could occupy an entire video, and time constraints prevent us from covering it here, I recommend exploring external resources for those unfamiliar with the concept.
+
+**[SHOUT OUT TO 3b1b]**
+
+In essence, derivatives help us determine the slope of tangent lines to a function. To minimize the total relevant cost, our focus is on identifying the specific tangent line with a slope of zero, as this indicates the function's minimum point.
+
+So, by taking the derivative of the total relevant cost function and setting it equal to zero, we can find the specific Q that...
+
+$TRC'(Q) = \frac{d}{dQ}\big(c_t\frac{D}{Q} + c_e\frac{Q}{2}\big)$
+
+$0 = - c_t\frac{D}{Q^2} + \frac{c_e}{2}$
+
+$\frac{c_e}{2} = c_t\frac{D}{Q^2}$ (This is the mathematical explanation of why the optimal or minimum cost is found when the ordering cost and the holding cost are the same.)
+
+$Q^2 = \frac{2c_{t}D}{c_e}$
+
+$Q = \sqrt{\frac{2c_{t}D}{c_e}}$
 
 ## Formula derivation
 

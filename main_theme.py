@@ -110,9 +110,9 @@ class TransformByGlyphMap(AnimationGroup):
             print(f"From indices: {len(remaining_from_indices)}    To indices: {len(remaining_to_indices)}")
             print("Showing indices...")
             super().__init__(
-                Create(index_labels(self.mobA[0], color=PINK)),
+                Create(index_labels(self.mobA[0], label_height=0.09, background_stroke_width=1, background_stroke_color=RED)),
                 FadeIn(self.mobB.next_to(self.mobA, DOWN), shift=DOWN),
-                Create(index_labels(self.mobB[0], color=PINK)),
+                Create(index_labels(self.mobB[0], label_height=0.09, background_stroke_width=1, background_stroke_color=RED)),
                 Wait(5),
                 lag_ratio=0.5
                 )

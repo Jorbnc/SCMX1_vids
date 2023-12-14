@@ -1034,14 +1034,29 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       (list(range(15)), list(range(2, 17))),
                                       ([], [0,1])
                                       ), run_time=1.5)
-        self.wait(7.5)
+        self.wait(1)
+        self.play(*[TC_1[0][i].animate.set_color(COLOR_3) for i in [3, 6, 7, 12, 13]], run_time=0.75)
+        self.play(*[TC_1[0][i].animate.set_color(COLOR_3) for i in [4, 8]], run_time=0.75)
+        self.wait(5)
         TC_2 = MathTex(r"TC(Q) = cD + c_{t}\frac{D}{Q} + c_{e}\frac{Q}{2}", font_size=30)
         self.play(TransformByGlyphMap(TC_1, TC_2,
                                       ([0,1], [0,1]),
                                       ([], [2,3,4]),
                                       (list(range(2, len(TC_1[0]))), list(range(5, len(TC_2[0])))), 
                                       ), run_time=1.5)
-        self.wait(19.5)
+        self.wait(2)
+        arr_unaff = Arrow(TC_2[0][6:8].get_center(), TC_2[0][6:8].get_center() + [0,1.5,0],
+                          color=MRED, max_tip_length_to_length_ratio=0.15, stroke_width=2)
+        unaff_txt = Tex("Remains unaffected by changes in $Q$").next_to(arr_unaff, UP*0.5)
+        self.play(LaggedStart(GrowArrow(arr_unaff), Write(unaff_txt), lag_ratio=0.5, run_time=1.5))
+        self.wait(4)
+        self.play(FadeOut(arr_unaff), FadeOut(unaff_txt), run_time=1)
+        self.wait(5)
+        focus = SurroundingRectangle(TC_2[0][9:], stroke_width=1.75, corner_radius=0.1, color=COLOR_3)
+        self.play(Create(focus), run_time=1.25)
+        self.wait(2)
+        self.play(FadeOut(focus), run_time=0.75)
+        self.wait(1)
         TRC_1 = MathTex(r"TRC(Q) = c_{t}\frac{D}{Q} + c_{e}\frac{Q}{2}", font_size=30)
         self.play(TransformByGlyphMap(TC_2, TRC_1,
                                       ([0], [0]),
@@ -1061,8 +1076,8 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
         x_label = grid.get_x_axis_label(Tex("Order Quantity").scale(1.1),
                                         edge=DOWN, direction=DOWN, buff=0.3)
         coord_system = VGroup(grid, y_label, x_label).shift(DOWN*0.5 + RIGHT*0.25)
-        
-        self.play(FadeIn(coord_system), TRC_1.animate.shift(UP*2.5), run_time=1.5)
+        pos = UP*2
+        self.play(FadeIn(coord_system), TRC_1.animate.shift(pos), run_time=1.5)
         q_dot_2 = Dot(point=grid.c2p(400, 0, 0), radius=0.05, color=COLOR_3)
 
         # INVENTORY COST FUNCTIONS: DEFINITION
@@ -1077,24 +1092,64 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                           line_color = COLOR_2, stroke_width = 4, add_vertex_dots=False)
 
         # OPTIMAL POINTS: SHOW
-        opt_point = Dot(point=grid.c2p(400, 1200, 0), radius=0.05, color=COLOR_3)
-        min_text = Tex("Minimum Total Cost", font_size=20, color=COLOR_3).move_to(grid.c2p(500, 1500, 0))
-        line_1 = Line(start=q_dot_2.get_center(), end=grid.c2p(400, 1200, 0), stroke_width=1, color=COLOR_3)
+        opt_point = Dot(point=grid.c2p(400, 1200, 0), radius=0.065, color=COLOR_3)
+        min_text = Tex("Minimum TRC", font_size=22, color=COLOR_3).next_to(opt_point, UP*0.5)
+        line_1 = Line(start=q_dot_2.get_center(), end=grid.c2p(400, 1200, 0), stroke_width=1.5, color=COLOR_3)
 
         # SHOW HOLDING AND SETUP COSTS
+        setup_text = Tex(r"Ordering cost", font_size=22, color=COLOR_2).move_to(grid.c2p(800, 500, 0))
+        holding_text = Tex(r"Holding cost", font_size=22, color=COLOR_2).move_to(grid.c2p(1000, 1200, 0))
+        TRC_text = Tex(r"\textbf{TRC}", font_size=25, color=COLOR_2).move_to(grid.c2p(180, 2200, 0))
         self.wait(2)
-        self.play(Create(setup_cost), run_time=3, rate_func=smooth)
+        self.play(LaggedStart(Create(setup_cost), Write(setup_text),
+                              lag_ratio=0.8, run_time=3, rate_func=smooth))
+        #self.play(Write(setup_text), run_time=0.75)
         self.wait(6)
-        self.play(Create(holding_cost), run_time=3, rate_func=linear)
-        self.wait(8)
-        self.play(Create(total_cost), run_time=2)
+        self.play(LaggedStart(Create(holding_cost), Write(holding_text),
+                              lag_ratio=0.5, run_time=2.5, rate_func=linear))
+        self.wait(8.5)
+        self.play(LaggedStart(Write(TRC_text), Create(total_cost),
+                              lag_ratio=0.25, run_time=2))
         self.wait(1.5)
         self.play(Create(line_1), run_time=1)
         self.play(Create(opt_point), Write(min_text),run_time=0.50, rate_func=smooth)
-        self.wait(0.75)
+        self.wait(18)
+
+        foo = Rectangle(width=20, height=20, fill_color=COLOR_1, fill_opacity=0.75)
+        calc_3b1b_a = FramedImage("img/6_3b1b_main.png", width=5)
+        calc_3b1b_b = FramedImage("img/6_3b1b_calculus.png", width=12)
+        self.play(LaggedStart(FadeIn(foo), FadeIn(calc_3b1b_a), lag_ratio=0.25, run_time=1))
+        self.wait(1.5)
+        self.play(FadeOut(calc_3b1b_a), FadeIn(calc_3b1b_b), run_time=1)
+        self.wait(3)
+        self.play(FadeOut(calc_3b1b_b), FadeOut(foo), run_time=1)
+        self.wait(1)
+
+        
+        foo = grid.plot(lambda x: 3*x/2 + 100*2400/x, x_range=[80, 400, 20], use_vectorized=True) # Helper func
+        alpha = ValueTracker(0.2)
+        tangent = always_redraw(lambda : TangentLine(foo,
+                                                     alpha=alpha.get_value(),
+                                                     color=COLOR_4, stroke_width=2,
+                                                     length=6))
+        
+        camera_1 = self.camera.frame.save_state()
+        self.play(GrowFromCenter(tangent),
+                  *[FadeOut(mob) for mob in [holding_cost, holding_text, setup_cost, setup_text,
+                                             line_1, opt_point, min_text]],
+                  run_time=1.5)
+        self.play(alpha.animate.set_value(0.6), run_time=5, rate_func=rate_functions.smooth)
+        self.wait(2.5)
+        self.play(self.camera.frame.animate.scale(0.75).move_to(opt_point.get_center()),
+                  alpha.animate.set_value(1), run_time=2)
+        self.wait(2.75)
+        self.play(FadeIn(opt_point), FadeIn(min_text), run_time=1)
+        self.wait(1)
+        self.play(Restore(camera_1), FadeOut(tangent), run_time=1.25)
+        self.wait(5.5)
 
         TRC_2 = MathTex(r"TRC'(Q) = \frac{d}{dQ}\left(c_{t}\frac{D}{Q} + c_{e}\frac{Q}{2}\right)", font_size=30)
-        TRC_2.shift(UP*2.5)
+        TRC_2.shift(pos)
         self.play(TransformByGlyphMap(TRC_1, TRC_2,
                                       ([0,1,2], [0,1,2]),
                                       ([], [3]),
@@ -1103,7 +1158,51 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       ([*ir(7,17)], [*ir(13,23)]),
                                       ([], [24])
                                       ), run_time=1)
-        self.wait(8)
+        
+        TRC_3 = MathTex(r" 0 = \frac{d}{dQ}\left(c_{t}\frac{D}{Q} + c_{e}\frac{Q}{2}\right)", font_size=30)
+        TRC_3.shift(pos)
+        self.wait(3)
+        self.play(TransformByGlyphMap(TRC_2, TRC_3,
+                                      ([*ir(0,6)], []),
+                                      ([], [0]),
+                                      ([*ir(7,24)], [*ir(1,18)])
+                                      ), run_time=1.25)
+        self.wait(6)
+        optimal_1 = MathTex(r"0 = -c_{t}\frac{D}{Q^2} + \frac{c_{e}}{2}", font_size=30).shift(pos)
+        self.play(TransformByGlyphMap(TRC_3, optimal_1,
+                                      ([0,1], [0,1]),
+                                      ([], [2,8]),
+                                      ([7,8,9,10,11], [3,4,5,6,7]),
+                                      ([12,13,14,16,17], [9,10,11,12,13]),
+                                      ([2,3,4,5,6,15,18], [])
+                                      ), run_time=1.25)
+        optimal_2 = MathTex(r"c_{t}\frac{D}{Q^2} = \frac{c_{e}}{2}", font_size=30).shift(pos)
+        self.play(TransformByGlyphMap(optimal_1, optimal_2,
+                                      ([0,2,9], []),
+                                      ([*ir(3,8)], [*ir(0,5)]),
+                                      ([*ir(10,13)], [*ir(7,10)])
+                                      ), run_time=1.25)
+        optimal_3 = MathTex(r"c_{t}\frac{D}{Q} = c_{e}\frac{Q}{2}", font_size=30).shift(pos)
+        self.wait(1)
+        self.play(TransformByGlyphMap(optimal_2, optimal_3,
+                                      ([0,1,2,3,4], [0,1,2,3,4]),
+                                      ([5], []),
+                                      ([4], [8]),
+                                      ([6,7,8], [5,6,7]),
+                                      ([9,10], [9,10])
+                                      ), run_time=1.25)
+        self.wait(2)
+
+        optimal_4 = MathTex(r"Q = \sqrt{\frac{2c_{t}D}{c_{e}}}", font_size=30).shift(pos)
+        self.play(TransformByGlyphMap(optimal_3, optimal_4,
+                                      ([4,8], [0,0]),
+                                      ([5], [1]),
+                                      ([], [2,3,8]),
+                                      ([10,0,1,2,6,7], [4,5,6,7,9,10]),
+                                      ([3,9], [])
+                                      ), run_time=1.25)
+
+        self.wait(2)
 
 class test(Scene):
     def construct(self):
@@ -1113,3 +1212,4 @@ class test(Scene):
         self.play(TransformByGlyphMap(expA, expB,
                                       ([], [])
                                       ), run_time=1)
+        

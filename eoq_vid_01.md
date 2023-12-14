@@ -149,11 +149,11 @@ $TRC(Q) = c_t\frac{D}{Q} + c_e\frac{Q}{2}$
 
 Let's plot the function to observe its behavior. As Q increases, the ordering or setup cost decreases, which is logical since larger lots result in fewer orders. Conversely, the holding cost increases with larger Q, leading to a higher average cost for the year, and therefore more capital and storage costs, as previously discussed.
 
-We can visually observe that the total relevant cost appears to be the least when both cost components are roughly equal. To precisely understand this aspect and confirm our visual intuition, a basic understanding of calculus, specifically derivatives, is necessary. Although an in-depth explanation of derivatives could occupy an entire video, and time constraints prevent us from covering it here, I recommend exploring external resources for those unfamiliar with the concept.
+We can visually observe that the total relevant cost appears to be the least when both cost components are roughly equal. To precisely understand this aspect and confirm our visual intuition, a basic understanding of calculus, specifically derivatives, is necessary. An in-depth exploration of derivatives could fill an entire video, so we won't delve into it here. For those unfamiliar with the concept, I recommend Three Blue One Brown's concise and intuitive series on the Essence of Calculus.
 
-**[SHOUT OUT TO 3b1b]**
+In a nutshell, derivatives help us determine the slope of tangent lines to a function. To minimize the total relevant cost, our focus is on identifying the specific tangent line with a slope of zero, as this indicates the function's minimum point.
 
-In essence, derivatives help us determine the slope of tangent lines to a function. To minimize the total relevant cost, our focus is on identifying the specific tangent line with a slope of zero, as this indicates the function's minimum point.
+## Formula derivation
 
 So, by taking the derivative of the total relevant cost function and setting it equal to zero, we can find the specific Q that...
 
@@ -166,10 +166,6 @@ $\frac{c_e}{2} = c_t\frac{D}{Q^2}$ (This is the mathematical explanation of why 
 $Q^2 = \frac{2c_{t}D}{c_e}$
 
 $Q = \sqrt{\frac{2c_{t}D}{c_e}}$
-
-## Formula derivation
-
-$0 = \frac{c_e}{2} - c_t\frac{D}{Q^2} \implies Q=\sqrt{\frac{2c_{t}D}{c_e}}$
 
 # Practical Example
 

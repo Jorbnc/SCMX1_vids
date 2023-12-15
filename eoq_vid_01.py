@@ -1073,7 +1073,7 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                      axis_config={"color": COLOR_1,"font_size": 24}, tips=False)
         y_label = grid.get_y_axis_label(Tex("Cost").scale(1.1).rotate(90 * DEGREES),
                                         edge=LEFT, direction=LEFT, buff=0.3)
-        x_label = grid.get_x_axis_label(Tex("Order Quantity").scale(1.1),
+        x_label = grid.get_x_axis_label(Tex("Order Quantity: $Q$").scale(1.1),
                                         edge=DOWN, direction=DOWN, buff=0.3)
         coord_system = VGroup(grid, y_label, x_label).shift(DOWN*0.5 + RIGHT*0.25)
         pos = UP*2
@@ -1146,7 +1146,7 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
         self.play(FadeIn(opt_point), FadeIn(min_text), run_time=1)
         self.wait(1)
         self.play(Restore(camera_1), FadeOut(tangent), run_time=1.25)
-        self.wait(5.5)
+        self.wait(5)
 
         TRC_2 = MathTex(r"TRC'(Q) = \frac{d}{dQ}\left(c_{t}\frac{D}{Q} + c_{e}\frac{Q}{2}\right)", font_size=30)
         TRC_2.shift(pos)
@@ -1167,7 +1167,7 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       ([], [0]),
                                       ([*ir(7,24)], [*ir(1,18)])
                                       ), run_time=1.25)
-        self.wait(6)
+        self.wait(6.5)
         optimal_1 = MathTex(r"0 = -c_{t}\frac{D}{Q^2} + \frac{c_{e}}{2}", font_size=30).shift(pos)
         self.play(TransformByGlyphMap(TRC_3, optimal_1,
                                       ([0,1], [0,1]),
@@ -1176,6 +1176,7 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       ([12,13,14,16,17], [9,10,11,12,13]),
                                       ([2,3,4,5,6,15,18], [])
                                       ), run_time=1.25)
+        self.wait(0.5)
         optimal_2 = MathTex(r"c_{t}\frac{D}{Q^2} = \frac{c_{e}}{2}", font_size=30).shift(pos)
         self.play(TransformByGlyphMap(optimal_1, optimal_2,
                                       ([0,2,9], []),
@@ -1191,8 +1192,13 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       ([6,7,8], [5,6,7]),
                                       ([9,10], [9,10])
                                       ), run_time=1.25)
+        self.wait(0.5)
+        arr_equal = Arrow(optimal_3.get_center() - [0,0.25,0], opt_point.get_center() - [0.05,0.75,0],
+                          color=COLOR_3, max_tip_length_to_length_ratio=0.035, stroke_width=2)
+        self.play(GrowArrow(arr_equal), FadeIn(setup_cost), FadeIn(holding_cost), run_time=1)
         self.wait(2)
-
+        self.play(FadeOut(arr_equal), run_time=0.75)
+        self.wait(2)
         optimal_4 = MathTex(r"Q = \sqrt{\frac{2c_{t}D}{c_{e}}}", font_size=30).shift(pos)
         self.play(TransformByGlyphMap(optimal_3, optimal_4,
                                       ([4,8], [0,0]),
@@ -1202,6 +1208,117 @@ class eoq_01_09(MovingCameraScene):  # Total Cost Expression
                                       ([3,9], [])
                                       ), run_time=1.25)
 
+        self.wait(1)
+        surr_form = SurroundingRectangle(optimal_4, color=COLOR_1, buff=0.275, corner_radius=0.175, stroke_width=2.25)
+        self.play(Create(surr_form), run_time=1)
+        self.wait(2)
+        self.play(*[FadeOut(mob) for mob in [grid, x_label, y_label, setup_cost, holding_cost, total_cost,
+                                             TRC_text, opt_point, min_text]], run_time=1)
+        self.wait(2)
+
+class eoq_01_10(MovingCameraScene):  # EOQ Example
+    def construct(self):
+        pos = UP*2
+        eoq_formula = MathTex(r"Q = \sqrt{\frac{2c_{t}D}{c_{e}}}", font_size=30).shift(pos)
+        surr_form = SurroundingRectangle(eoq_formula, color=COLOR_1, buff=0.275, corner_radius=0.175, stroke_width=2.25)
+        eoq_exp = VGroup(eoq_formula, surr_form)
+        self.add(eoq_formula, surr_form)
+        
+        qpro10 = FramedImage("img/7_qpro10.png", width=3).to_corner(DL).shift(UP*1 + RIGHT*0.5)
+        self.play(eoq_exp.animate.to_edge(LEFT).shift(RIGHT), FadeIn(qpro10), run_time=1)
+        self.wait(7)
+        qpro_demand = Tex("$D = 10,000$ units/year")
+        qpro_ct = Tex(r"$c_t = \$ 950/$order")
+        qpro_ce = Tex(r"$c_e = 20\%$ of $\$ 125$")
+        qpro_data = VGroup(qpro_demand, qpro_ct, qpro_ce).arrange(DOWN, buff=0.2, aligned_edge=LEFT).next_to(qpro10, RIGHT*2.5)
+        self.play(Write(qpro_demand), run_time=1)
+        self.wait(7)
+        self.play(Write(qpro_ct), run_time=1)
+        self.wait(8.25)
+        self.play(Write(qpro_ce), run_time=1)
+        self.wait(6)
+        qpro_EOQ_1 = MathTex(r"Q = \sqrt{\frac{2(950)(10,000)}{0.20(125)}}", font_size=30)
+        qpro_EOQ_2 = MathTex(r"Q \approx 872", font_size=30)
+        qpro_EOQ = VGroup(qpro_EOQ_1, qpro_EOQ_2).arrange(DOWN, buff=0.25, aligned_edge=LEFT).next_to(qpro_data, RIGHT*3)
+        
+        self.play(Write(qpro_EOQ_1), run_time=1.5)
+        self.wait(2)
+        self.play(Write(qpro_EOQ_2), run_time=1)
+        self.wait(1)
+        self.play(*[FadeOut(mob) for mob in [qpro10, qpro_data, qpro_EOQ]], run_time=1)
+        self.wait(1)
+        #
+        grid = Axes(x_range=[0, 365, 30], y_range=[0, 1000, 200], x_length=11, y_length=2,
+                    axis_config={"color": COLOR_1, "font_size": 23},
+                    x_axis_config={"include_numbers": True, "tick_size": 0.075},
+                    y_axis_config={"include_ticks": False}, tips=False).shift(DOWN*0.65)
+
+        # Labels for the x-axis and y-axis.
+        y_label = grid.get_y_axis_label(Tex("Inventory").scale(1).rotate(90*DEGREES),
+                                        edge=LEFT, direction=LEFT, buff=0.3)
+        x_label = grid.get_x_axis_label(Tex("Days").scale(1),edge=DOWN, direction=DOWN, buff=0.3)
+
+        # EOQ
+        replenishments = 12
+        replenishment_period = (872/10_000)*365
+        x_values = [i*replenishment_period for n in range(replenishments) for i in (n, n)]
+        x_values.append(x_values[-1]+replenishment_period)
+        sawtooth = grid.plot_line_graph(
+            x_values = x_values,
+            y_values = [872 if i % 2 else 0 for i in range(len(x_values))],
+            line_color=COLOR_2, stroke_width=2.25, add_vertex_dots=False,
+        )
+        
+        brace_N = BraceBetweenPoints(grid.c2p(365, 1000), grid.c2p(0, 1000), buff=0.2, color=COLOR_3, stroke_width=0)
+        qpro_N = MathTex(r"\frac{D}{Q} \approx 11.5 \text{ orders}", font_size=25).next_to(brace_N, UP*0.5)
+        
+        brace_T = BraceBetweenPoints(grid.c2p(31, 0), grid.c2p(65, 0), buff=0.65, color=COLOR_3, stroke_width=0)
+        qpro_T = MathTex(r"365\left(\frac{Q}{D}\right) \approx 32 \text{ days}}", font_size=25)
+        qpro_T.next_to(brace_T, DOWN*0.5)
+        
+        qpro_Q = MathTex(r"Q = 872", font_size=23, color=COLOR_2).next_to(grid.c2p(0, 872), RIGHT*0.5 + UP*0.5)
+
+        self.play(*[FadeIn(mob) for mob in [grid, x_label, y_label, sawtooth, qpro_Q]],
+                  Write(qpro_N), GrowFromCenter(brace_N), run_time=1.5)
+        self.wait(1.5)
+        self.play(LaggedStart(GrowFromCenter(brace_T), Write(qpro_T), lag_ratio=0.25, run_time=1.5))
+        self.wait(1)
+        self.play(*[FadeOut(mob) for mob in [grid, x_label, y_label, sawtooth, qpro_Q, qpro_N, qpro_T,
+                                             brace_N, brace_T]], run_time=1)
+        self.wait(1)
+
+        grid_2 = Axes(x_range=[500, 1500, 250], y_range=[0, 25000, 10000], x_length=10, y_length=3.5,
+                    axis_config={"color": COLOR_1, "font_size": 23},
+                    x_axis_config={"include_numbers": True, "tick_size": 0.075,
+                                   "numbers_with_elongated_ticks": [872]},
+                    y_axis_config={"include_numbers": True, "tick_size": 0.075}, tips=False).shift(DOWN*0.6)
+        
+        y_label_2 = grid_2.get_y_axis_label(Tex("Cost $(\$)$").scale(1).rotate(90*DEGREES),
+                                        edge=LEFT, direction=LEFT, buff=0.3)
+        x_label_2 = grid_2.get_x_axis_label(Tex("Order Quantity").scale(1),edge=DOWN, direction=DOWN, buff=0.3)
+        
+        holding_cost = grid_2.plot(lambda x: 950*10000/x, x_range=[510, 1500],
+                                   color=COLOR_2, use_vectorized=True, stroke_width=1.5)
+        ordering_cost = grid_2.plot(lambda x: 0.20*125*x/2, x_range=[510, 1500],
+                                    color=COLOR_2, use_vectorized=True, stroke_width=1.5)
+        total_cost = grid_2.plot(lambda x: 950*10000/x + 0.20*125*x/2, x_range=[510 , 1500],
+                                    color=COLOR_2, use_vectorized=True, stroke_width=2)
+
+        h_text = Tex("Holding Cost", color=COLOR_2).move_to(grid_2.c2p(1125, 11500, 0))
+        o_text = Tex("Ordering Cost", color=COLOR_2).move_to(grid_2.c2p(1050, 7000, 0))
+        TRC_text = Tex("TRC", color=COLOR_2).move_to(grid_2.c2p(1200, 21000, 0))
+        opt_point = Dot(point=grid_2.c2p(872, 10900, 0), radius=0.05, color=COLOR_4)
+
+        self.play(eoq_exp.animate.shift(UP*0.5),
+                  FadeIn(grid_2), FadeIn(x_label_2), FadeIn(y_label_2),
+                  Create(holding_cost), Create(ordering_cost), Create(total_cost),
+                  Write(h_text), Write(o_text), Write(TRC_text), run_time=1)
+        self.play(FadeIn(opt_point), run_time=1)
+        self.wait(3)
+        approx_cost = MathTex(r"\approx \$ 10,900", color=COLOR_4, font_size=27).move_to(grid_2.c2p(872, 13500, 0))
+        self.play(Write(approx_cost), run_time=1)
+        self.wait(1)
+        self.play(*[FadeOut(mob) for mob in self.mobjects], run_time=1)
         self.wait(2)
 
 class test(Scene):

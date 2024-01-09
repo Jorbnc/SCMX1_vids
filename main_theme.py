@@ -31,10 +31,10 @@ def FramedImage(filename, height=False, width=False):
     surr = SurroundingRectangle(img, color=MBLACK, buff=0.005, corner_radius=0.04, stroke_width=0.9)
     return Group(img, surr)
 
-def Lot(rows, cols, color=MBLACK, stroke_color=DBLUE):
+def Lot(rows, cols, color=MBLACK, stroke_color=DBLUE, buff=0.1, stroke_width=2):
     unit = RoundedRectangle(corner_radius=0.1, width=1, height=1, color=color, stroke_color=stroke_color,
-                           stroke_width=2, fill_opacity=1).scale(0.25)
-    return VGroup(*[unit.copy() for _ in range(rows*cols)]).arrange_in_grid(rows=rows, buff=0.1)
+                           stroke_width=stroke_width, fill_opacity=1).scale(0.25)
+    return VGroup(*[unit.copy() for _ in range(rows*cols)]).arrange_in_grid(rows=rows, buff=buff)
 
 def RightArrow(mobA, mobB, dir=RIGHT*5):
     mobB.next_to(mobA, dir)
@@ -46,7 +46,7 @@ def DownArrow(mobA, mobB, dir=DOWN*5):
     mobB.next_to(mobA, dir)
     return Arrow(mobA.get_center(),
                  mobB.get_center(),
-                 color=MRED, max_tip_length_to_length_ratio=0.15, stroke_width=2)
+                 color=MRED, max_tip_length_to_length_ratio=0.15, stroke_width=2.25)
 
 # ============= CUSTOM ANIMATION: TRANSFORM BY GLYPH MAP (SAW ON MANIM'S DISCORD CHANNEL)
 def ir(a,b): # inclusive range, useful for TransformByGlyphMap
@@ -110,9 +110,9 @@ class TransformByGlyphMap(AnimationGroup):
             print(f"From indices: {len(remaining_from_indices)}    To indices: {len(remaining_to_indices)}")
             print("Showing indices...")
             super().__init__(
-                Create(index_labels(self.mobA[0], label_height=0.09, background_stroke_width=1, background_stroke_color=RED)),
+                Create(index_labels(self.mobA[0], label_height=0.15, background_stroke_width=1, background_stroke_color=RED)),
                 FadeIn(self.mobB.next_to(self.mobA, DOWN), shift=DOWN),
-                Create(index_labels(self.mobB[0], label_height=0.09, background_stroke_width=1, background_stroke_color=RED)),
+                Create(index_labels(self.mobB[0], label_height=0.15, background_stroke_width=1, background_stroke_color=RED)),
                 Wait(5),
                 lag_ratio=0.5
                 )
